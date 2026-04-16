@@ -1,0 +1,125 @@
+<UserControl x:Class="HermesDesktop.Views.SkillBrowserView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:HermesDesktop.Controls">
+    <Grid Margin="24">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300" MinWidth="200"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left: skill list -->
+        <DockPanel Grid.Column="0">
+            <TextBlock DockPanel.Dock="Top" Text="Skills" FontSize="22" FontWeight="SemiBold" Margin="0,0,0,12"/>
+
+            <TextBox DockPanel.Dock="Top" Text="{Binding FilterQuery, UpdateSourceTrigger=PropertyChanged, Delay=200}"
+                     Padding="8,6" FontSize="13" Margin="0,0,0,8"/>
+
+            <TextBlock DockPanel.Dock="Top" Text="Loading skills..." Foreground="#888"
+                       Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}"/>
+
+            <ListView ItemsSource="{Binding FilteredSkills}" SelectedItem="{Binding SelectedSkill}"
+                      BorderThickness="1" BorderBrush="#DDD">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="4,6">
+                            <TextBlock Text="{Binding DisplayName}" FontSize="13" FontWeight="Medium"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                <Border Background="#E8EAF6" CornerRadius="3" Padding="6,1" Margin="0,0,6,0">
+                                    <TextBlock Text="{Binding DisplayCategory}" FontSize="10" Foreground="#3949AB"/>
+                                </Border>
+                                <TextBlock Text="{Binding Version}" FontSize="10" Foreground="#AAA"
+                                           Visibility="{Binding Version, Converter={StaticResource NullToVisibility}}"/>
+                            </StackPanel>
+                            <TextBlock Text="{Binding Description}" FontSize="11" Foreground="#AAA"
+                                       TextTrimming="CharacterEllipsis" MaxWidth="250" Margin="0,2,0,0"
+                                       Visibility="{Binding Description, Converter={StaticResource NullToVisibility}}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </DockPanel>
+
+        <GridSplitter Grid.Column="1" Width="3" Background="#DDD" Margin="8,0"/>
+
+        <!-- Right: skill detail -->
+        <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
+            <DockPanel>
+                <!-- Empty state -->
+                <TextBlock Text="Select a skill to view details" FontSize="14" Foreground="#888"
+                           VerticalAlignment="Center" HorizontalAlignment="Center"
+                           DockPanel.Dock="Top">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedSkill}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+                <!-- Detail content -->
+                <StackPanel Visibility="{Binding SelectedSkill, Converter={StaticResource NullToVisibility}}">
+                    <!-- Header -->
+                    <TextBlock Text="{Binding SelectedSkill.DisplayName}" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <Border Background="#E8EAF6" CornerRadius="3" Padding="8,2" Margin="0,0,8,0">
+                            <TextBlock Text="{Binding SelectedSkill.DisplayCategory}" FontSize="11" Foreground="#3949AB"/>
+                        </Border>
+                        <TextBlock Text="{Binding SelectedSkill.Version}" FontSize="12" Foreground="#888"
+                                   VerticalAlignment="Center"
+                                   Visibility="{Binding SelectedSkill.Version, Converter={StaticResource NullToVisibility}}"/>
+                    </StackPanel>
+
+                    <!-- Description -->
+                    <TextBlock Text="{Binding SelectedSkill.Description}" FontSize="13" Foreground="#555"
+                               TextWrapping="Wrap" Margin="0,0,0,12"
+                               Visibility="{Binding SelectedSkill.Description, Converter={StaticResource NullToVisibility}}"/>
+
+                    <!-- Metadata -->
+                    <Border Background="#F8F8F8" CornerRadius="4" Padding="12" Margin="0,0,0,12">
+                        <StackPanel>
+                            <TextBlock FontSize="12" Margin="0,0,0,4">
+                                <Run Text="Slug: " Foreground="#888"/>
+                                <Run Text="{Binding SelectedSkill.Slug, Mode=OneWay}" FontFamily="Consolas"/>
+                            </TextBlock>
+                            <TextBlock FontSize="12">
+                                <Run Text="Path: " Foreground="#888"/>
+                                <Run Text="{Binding SelectedSkill.RelativePath, Mode=OneWay}" FontFamily="Consolas"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Tags -->
+                    <ItemsControl ItemsSource="{Binding SelectedSkill.Tags}" Margin="0,0,0,12">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="#E3F2FD" CornerRadius="3" Padding="8,2" Margin="0,0,4,4">
+                                    <TextBlock Text="{Binding}" FontSize="11" Foreground="#1565C0"/>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <!-- Loading detail -->
+                    <TextBlock Text="Loading skill content..." Foreground="#888" Margin="0,0,0,8"
+                               Visibility="{Binding IsLoadingDetail, Converter={StaticResource BoolToVisibility}}"/>
+
+                    <!-- Markdown content -->
+                    <controls:MarkdownControl MarkdownText="{Binding SelectedSkillMarkdown}"
+                                              MinHeight="300" Margin="0,0,0,12"
+                                              Visibility="{Binding SelectedSkillMarkdown, Converter={StaticResource NullToVisibility}}"/>
+                </StackPanel>
+            </DockPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

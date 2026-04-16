@@ -1,0 +1,122 @@
+<Window x:Class="HermesDesktop.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{Binding WindowTitle}" Width="1200" Height="800"
+        WindowStartupLocation="CenterScreen"
+        Icon="Resources/Icons/hermes.ico"
+        Background="{DynamicResource WindowBackground}">
+
+    <Window.InputBindings>
+        <KeyBinding Key="S" Modifiers="Control" Command="{Binding SaveFileShortcutCommand}"/>
+    </Window.InputBindings>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220" MinWidth="180" MaxWidth="350"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Sidebar -->
+        <Border Grid.Column="0" Background="{DynamicResource SidebarBackground}"
+                BorderThickness="0,0,1,0" BorderBrush="{DynamicResource SidebarBorder}">
+            <DockPanel>
+                <Border DockPanel.Dock="Top" Padding="16,14" BorderThickness="0,0,0,1"
+                        BorderBrush="{DynamicResource SidebarBorder}">
+                    <TextBlock Text="Hermes Desktop" FontSize="16" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimary}"/>
+                </Border>
+
+                <Border DockPanel.Dock="Top" Padding="12,8" BorderThickness="0,0,0,1"
+                        BorderBrush="{DynamicResource SidebarBorder}"
+                        Visibility="{Binding ActiveConnection, Converter={StaticResource NullToVisibility}}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding ActiveConnection.Label}" FontWeight="Medium" FontSize="12"
+                                   Foreground="{DynamicResource TextSecondary}"/>
+                        <TextBlock Text="{Binding ActiveConnection.DisplayTarget}" FontSize="11"
+                                   Foreground="{DynamicResource TextTertiary}" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border DockPanel.Dock="Bottom" Padding="12,6" BorderThickness="0,1,0,0"
+                        BorderBrush="{DynamicResource SidebarBorder}">
+                    <TextBlock Text="{Binding StatusMessage}" FontSize="11"
+                               Foreground="{DynamicResource TextTertiary}"
+                               TextTrimming="CharacterEllipsis"/>
+                </Border>
+
+                <ListBox ItemsSource="{Binding NavigationItems}"
+                         SelectedValue="{Binding SelectedSection}"
+                         SelectedValuePath="Section"
+                         BorderThickness="0" Background="Transparent" Padding="4,8">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="8,5">
+                                <TextBlock Text="{Binding IconGlyph}" FontFamily="Segoe MDL2 Assets"
+                                           FontSize="14" Foreground="{DynamicResource TextTertiary}"
+                                           Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding Label}" FontSize="13"
+                                           Foreground="{DynamicResource TextSecondary}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Padding" Value="8,4"/>
+                            <Setter Property="Margin" Value="4,1"/>
+                            <Setter Property="Cursor" Value="Hand"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBoxItem">
+                                        <Border x:Name="Bd" Padding="{TemplateBinding Padding}"
+                                                Background="Transparent" CornerRadius="4">
+                                            <ContentPresenter/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="Bd" Property="Background"
+                                                        Value="{DynamicResource SidebarHover}"/>
+                                            </Trigger>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter TargetName="Bd" Property="Background"
+                                                        Value="{DynamicResource SidebarSelected}"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <GridSplitter Grid.Column="1" Width="3" HorizontalAlignment="Center"
+                      VerticalAlignment="Stretch" Background="{DynamicResource SplitterBrush}"/>
+
+        <!-- Content area -->
+        <ContentControl Grid.Column="2" Content="{Binding CurrentContentViewModel}" Margin="0"/>
+
+        <!-- Unsaved changes dialog overlay -->
+        <Border Grid.ColumnSpan="3" Background="{DynamicResource OverlayBackground}"
+                Visibility="{Binding ShowDiscardChangesDialog, Converter={StaticResource BoolToVisibility}}"
+                Panel.ZIndex="100">
+            <Border Background="{DynamicResource DialogBackground}" CornerRadius="8" Padding="24"
+                    MaxWidth="420" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <StackPanel>
+                    <TextBlock Text="Discard unsaved changes?" FontSize="16" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,8"/>
+                    <TextBlock Text="USER.md, MEMORY.md, or SOUL.md has unsaved edits. Discard and navigate away?"
+                               FontSize="13" Foreground="{DynamicResource TextSecondary}"
+                               TextWrapping="Wrap" Margin="0,0,0,20"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="Stay" Command="{Binding CancelNavigationCommand}"
+                                Padding="16,6" Margin="0,0,8,0"/>
+                        <Button Content="Discard" Command="{Binding DiscardChangesAndNavigateCommand}"
+                                Padding="16,6" Foreground="#C00"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Border>
+    </Grid>
+</Window>

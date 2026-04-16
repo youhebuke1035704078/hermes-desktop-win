@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+        font-size: 14px;
+        line-height: 1.6;
+        padding: 16px;
+        color: var(--text-color, #333);
+        background: var(--bg-color, #FAFAFA);
+    }
+    body.dark { --text-color: #CCC; --bg-color: #1E1E1E; --code-bg: #2D2D2D; --border: #3C3C3C; --link: #4FC3F7; }
+    body.light { --text-color: #333; --bg-color: #FAFAFA; --code-bg: #F5F5F5; --border: #E0E0E0; --link: #1565C0; }
+    h1, h2, h3, h4, h5, h6 { margin: 1em 0 0.5em; font-weight: 600; }
+    h1 { font-size: 1.8em; border-bottom: 1px solid var(--border); padding-bottom: 0.3em; }
+    h2 { font-size: 1.4em; border-bottom: 1px solid var(--border); padding-bottom: 0.3em; }
+    h3 { font-size: 1.2em; }
+    p { margin: 0.5em 0; }
+    code { font-family: Consolas, 'Cascadia Code', monospace; background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 12px; border-radius: 6px; overflow-x: auto; margin: 0.5em 0; }
+    pre code { background: none; padding: 0; }
+    ul, ol { margin: 0.5em 0 0.5em 1.5em; }
+    li { margin: 0.2em 0; }
+    a { color: var(--link); text-decoration: none; }
+    blockquote { border-left: 3px solid var(--border); padding-left: 12px; margin: 0.5em 0; color: #888; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 1em 0; }
+    table { border-collapse: collapse; margin: 0.5em 0; width: 100%; }
+    th, td { border: 1px solid var(--border); padding: 6px 12px; text-align: left; }
+    th { background: var(--code-bg); font-weight: 600; }
+    strong { font-weight: 600; }
+    em { font-style: italic; }
+</style>
+</head>
+<body class="light">
+<div id="content"></div>
+<script src="marked.min.js"></script>
+<script>
+    function renderMarkdown(base64Content, isDark) {
+        document.body.className = isDark ? 'dark' : 'light';
+        try {
+            var text = atob(base64Content);
+            document.getElementById('content').innerHTML = marked.parse(text);
+        } catch(e) {
+            document.getElementById('content').innerText = 'Error rendering markdown: ' + e.message;
+        }
+    }
+</script>
+</body>
+</html>

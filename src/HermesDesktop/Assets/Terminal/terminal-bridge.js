@@ -1,0 +1,120 @@
+(function () {
+    'use strict';
+
+    var terminal = new Terminal({
+        fontFamily: 'Cascadia Code, Cascadia Mono, Consolas, monospace',
+        fontSize: 14,
+        lineHeight: 1.1,
+        theme: {
+            background: '#1e1e1e',
+            foreground: '#cccccc',
+            cursor: '#ffffff',
+            cursorAccent: '#1e1e1e',
+            selectionBackground: '#264f78',
+            black: '#000000',
+            red: '#cd3131',
+            green: '#0dbc79',
+            yellow: '#e5e510',
+            blue: '#2472c8',
+            magenta: '#bc3fbc',
+            cyan: '#11a8cd',
+            white: '#e5e5e5',
+            brightBlack: '#666666',
+            brightRed: '#f14c4c',
+            brightGreen: '#23d18b',
+            brightYellow: '#f5f543',
+            brightBlue: '#3b8eea',
+            brightMagenta: '#d670d6',
+            brightCyan: '#29b8db',
+            brightWhite: '#e5e5e5'
+        },
+        cursorBlink: true,
+        allowProposedApi: true,
+        scrollback: 10000
+    });
+
+    var fitAddon = new FitAddon.FitAddon();
+    terminal.loadAddon(fitAddon);
+
+    terminal.open(document.getElementById('terminal'));
+
+    // Try WebGL renderer for performance, fall back to canvas
+    try {
+        var webglAddon = new WebglAddon.WebglAddon();
+        webglAddon.onContextLoss(function () {
+            webglAddon.dispose();
+        });
+        terminal.loadAddon(webglAddon);
+    } catch (e) {
+        console.warn('WebGL addon failed, using canvas renderer:', e);
+    }
+
+    fitAddon.fit();
+
+    // === Input: xterm.js -> C# ===
+    terminal.onData(function (data) {
+        // Encode as base64 for safe transport through JS interop
+        var bytes = new TextEncoder().encode(data);
+        var base64 = btoa(String.fromCharCode.apply(null, bytes));
+        window.chrome.webview.postMessage(JSON.stringify({
+            type: 'input',
+            data: base64
+        }));
+    });
+
+    terminal.onBinary(function (data) {
+        var base64 = btoa(data);
+        window.chrome.webview.postMessage(JSON.stringify({
+            type: 'input',
+            data: base64
+        }));
+    });
+
+    // === Resize: xterm.js -> C# ===
+    var resizeTimer = null;
+    var resizeObserver = new ResizeObserver(function () {
+        // Debounce resize events
+        if (resizeTimer) clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function () {
+            fitAddon.fit();
+            window.chrome.webview.postMessage(JSON.stringify({
+                type: 'resize',
+                cols: terminal.cols,
+                rows: terminal.rows
+            }));
+        }, 100);
+    });
+    resizeObserver.observe(document.getElementById('terminal'));
+
+    // === Output: C# -> xterm.js ===
+    // Called from C# via ExecuteScriptAsync
+    window.terminalWrite = function (base64Data) {
+        try {
+            var binaryStr = atob(base64Data);
+            var bytes = new Uint8Array(binaryStr.length);
+            for (var i = 0; i < binaryStr.length; i++) {
+                bytes[i] = binaryStr.charCodeAt(i);
+            }
+            terminal.write(bytes);
+        } catch (e) {
+            console.error('terminalWrite error:', e);
+        }
+    };
+
+    // === Clear: C# -> xterm.js ===
+    window.terminalClear = function () {
+        terminal.clear();
+    };
+
+    // === Focus management ===
+    window.terminalFocus = function () {
+        terminal.focus();
+    };
+
+    // Signal ready
+    window.chrome.webview.postMessage(JSON.stringify({
+        type: 'ready',
+        cols: terminal.cols,
+        rows: terminal.rows
+    }));
+})();

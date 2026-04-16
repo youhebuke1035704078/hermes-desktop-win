@@ -1,0 +1,28 @@
+<UserControl x:Class="HermesDesktop.Controls.SimpleBarChart"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Border BorderBrush="#E0E0E0" BorderThickness="1" CornerRadius="4" Padding="8" Background="#FAFAFA">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock x:Name="TitleText" Grid.Row="0" FontSize="13" FontWeight="Medium" Margin="0,0,0,8"/>
+            <ItemsControl x:Name="BarsPanel" Grid.Row="1">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Rows="1"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="1,0" VerticalAlignment="Bottom" ToolTip="{Binding Tooltip}">
+                            <Rectangle Fill="{Binding Fill}" Height="{Binding BarHeight}"
+                                       VerticalAlignment="Bottom" RadiusX="1" RadiusY="1"/>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
+    </Border>
+</UserControl>
