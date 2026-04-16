@@ -63,6 +63,12 @@ public partial class App : Application
     {
         ThemeManager.ApplySystemTheme();
 
+        if (!await WebView2Bootstrapper.EnsureInstalledAsync())
+        {
+            Shutdown();
+            return;
+        }
+
         await _host.StartAsync();
 
         var mainVm = _host.Services.GetRequiredService<MainViewModel>();
