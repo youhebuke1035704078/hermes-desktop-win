@@ -2,8 +2,8 @@ name: Build & Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - master
 
 permissions:
   contents: write
@@ -13,6 +13,8 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
@@ -28,8 +30,19 @@ jobs:
             -p:EnableCompressionInSingleFile=true `
             -o ./publish
 
+      - name: Generate version tag
+        id: version
+        run: |
+          $date = Get-Date -Format "yyyy.MM.dd"
+          $count = git tag -l "$date.*" | Measure-Object | Select-Object -ExpandProperty Count
+          $version = "$date.$($count + 1)"
+          echo "tag=v$version" >> $env:GITHUB_OUTPUT
+          echo "Version: v$version"
+
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: ${{ steps.version.outputs.tag }}
           files: publish/HermesDesktop.exe
           generate_release_notes: true
