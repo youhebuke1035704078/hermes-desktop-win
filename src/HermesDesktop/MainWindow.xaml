@@ -5,27 +5,60 @@
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource WindowBackground}">
 
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="32" ResizeBorderThickness="4"
+                      GlassFrameThickness="0" CornerRadius="0"/>
+    </WindowChrome.WindowChrome>
+
     <Window.InputBindings>
         <KeyBinding Key="S" Modifiers="Control" Command="{Binding SaveFileShortcutCommand}"/>
     </Window.InputBindings>
 
-    <Grid>
+    <Grid x:Name="RootGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="220" MinWidth="180" MaxWidth="350"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
+        <!-- Custom Title Bar -->
+        <Grid Grid.Row="0" Grid.ColumnSpan="3" Background="{DynamicResource WindowBackground}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="12,0,0,0"
+                        VerticalAlignment="Center">
+                <Image Source="/Resources/Icons/hermes.ico" Width="16" Height="16"
+                       RenderOptions.BitmapScalingMode="HighQuality" Margin="0,0,8,0"/>
+                <TextBlock Text="{Binding WindowTitle}" FontSize="12" FontWeight="Medium"
+                           Foreground="{DynamicResource TextTertiary}"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Top">
+                <Button x:Name="MinimizeButton" Style="{StaticResource CaptionButtonStyle}"
+                        Content="&#xE921;" Click="MinimizeButton_Click"
+                        ToolTip="Minimize"/>
+                <Button x:Name="MaximizeButton" Style="{StaticResource CaptionButtonStyle}"
+                        Content="&#xE922;" Click="MaximizeButton_Click"
+                        ToolTip="Maximize"/>
+                <Button x:Name="CloseButton" Style="{StaticResource CloseButtonStyle}"
+                        Content="&#xE8BB;" Click="CloseButton_Click"
+                        ToolTip="Close"/>
+            </StackPanel>
+        </Grid>
+
         <!-- Sidebar -->
-        <Border Grid.Column="0" Background="{DynamicResource SidebarBackground}"
+        <Border Grid.Row="1" Grid.Column="0" Background="{DynamicResource SidebarBackground}"
                 BorderThickness="0,0,1,0" BorderBrush="{DynamicResource SidebarBorder}">
             <DockPanel>
-                <Border DockPanel.Dock="Top" Padding="16,14" BorderThickness="0,0,0,1"
-                        BorderBrush="{DynamicResource SidebarBorder}">
-                    <TextBlock Text="Hermes Desktop" FontSize="16" FontWeight="SemiBold"
-                               Foreground="{DynamicResource TextPrimary}"/>
-                </Border>
-
                 <Border DockPanel.Dock="Top" Padding="12,8" BorderThickness="0,0,0,1"
                         BorderBrush="{DynamicResource SidebarBorder}"
                         Visibility="{Binding ActiveConnection, Converter={StaticResource NullToVisibility}}">
@@ -90,15 +123,16 @@
             </DockPanel>
         </Border>
 
-        <GridSplitter Grid.Column="1" Width="3" HorizontalAlignment="Center"
+        <GridSplitter Grid.Row="1" Grid.Column="1" Width="3" HorizontalAlignment="Center"
                       VerticalAlignment="Stretch" Background="{DynamicResource SplitterBrush}"/>
 
         <!-- Content area -->
-        <ContentControl Grid.Column="2" Content="{Binding CurrentContentViewModel}" Margin="0"
+        <ContentControl Grid.Row="1" Grid.Column="2" Content="{Binding CurrentContentViewModel}" Margin="0"
                         HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
 
         <!-- Unsaved changes dialog overlay -->
-        <Border Grid.ColumnSpan="3" Background="{DynamicResource OverlayBackground}"
+        <Border Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="3"
+                Background="{DynamicResource OverlayBackground}"
                 Visibility="{Binding ShowDiscardChangesDialog, Converter={StaticResource BoolToVisibility}}"
                 Panel.ZIndex="100">
             <Border Background="{DynamicResource DialogBackground}" CornerRadius="8" Padding="24"

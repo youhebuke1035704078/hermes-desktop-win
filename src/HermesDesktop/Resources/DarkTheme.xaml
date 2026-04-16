@@ -37,6 +37,12 @@
     <SolidColorBrush x:Key="DangerBackground" Color="#DC3545"/>
     <SolidColorBrush x:Key="DangerForeground" Color="#FF6B6B"/>
 
+    <!-- Caption buttons (title bar) -->
+    <SolidColorBrush x:Key="CaptionButtonHover" Color="#2A2A2E"/>
+    <SolidColorBrush x:Key="CaptionButtonPressed" Color="#34343A"/>
+    <SolidColorBrush x:Key="CloseButtonHover" Color="#C42B1C"/>
+    <SolidColorBrush x:Key="CloseButtonHoverForeground" Color="#FFFFFF"/>
+
     <!-- Inputs -->
     <SolidColorBrush x:Key="InputBackground" Color="#191A1B"/>
     <SolidColorBrush x:Key="InputBorder" Color="#34343A"/>
