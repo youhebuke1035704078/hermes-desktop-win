@@ -1,4 +1,5 @@
 using System.IO;
+using System.Text;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,6 +21,9 @@ public partial class TerminalControl : UserControl, IDisposable
     public TerminalControl()
     {
         InitializeComponent();
+        Focusable = true;
+        PreviewKeyDown += OnPreviewKeyDown;
+        PreviewTextInput += OnPreviewTextInput;
     }
 
     public TerminalControl(ILogger logger) : this()
@@ -144,7 +148,7 @@ public partial class TerminalControl : UserControl, IDisposable
         try
         {
             var json = e.WebMessageAsJson;
-            using var doc = JsonDocument.Parse(json);
+            using var doc = JsonDocument.Parse(json!);
             var root = doc.RootElement;
 
             var type = root.GetProperty("type").GetString();
@@ -203,14 +207,107 @@ public partial class TerminalControl : UserControl, IDisposable
 
     public new void Focus()
     {
-        // Focus the WPF WebView2 control so it receives keyboard input
-        TerminalWebView.Focus();
-        Keyboard.Focus(TerminalWebView);
+        // Give this UserControl WPF keyboard focus so PreviewKeyDown/PreviewTextInput fire
+        // as a fallback before the user clicks the terminal (which gives browser HWND Win32 focus).
+        Keyboard.Focus(this);
 
-        // Also focus xterm.js inside the WebView2
+        // Tell xterm.js to show a blinking cursor
         if (TerminalWebView.CoreWebView2 != null)
-        {
             _ = TerminalWebView.CoreWebView2.ExecuteScriptAsync("terminalFocus()");
+    }
+
+    // === WPF-level keyboard fallback ===
+    // Before the user clicks the terminal, the WPF window has Win32 focus.
+    // These handlers catch keyboard events and write directly to the shell stream.
+    // Once the user clicks the terminal, browser HWND gets Win32 focus and
+    // xterm.js handles keyboard natively via onData → postMessage.
+
+    private void OnPreviewTextInput(object sender, TextCompositionEventArgs e)
+    {
+        if (_shellStream == null || string.IsNullOrEmpty(e.Text)) return;
+
+        var bytes = Encoding.UTF8.GetBytes(e.Text);
+        _ = WriteToShellAsync(bytes);
+        e.Handled = true;
+    }
+
+    private void OnPreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        if (_shellStream == null) return;
+
+        var key = e.Key == Key.System ? e.SystemKey : e.Key;
+        var mod = Keyboard.Modifiers;
+        byte[]? bytes = null;
+
+        // Ctrl+key → control characters (0x01–0x1A)
+        if ((mod & ModifierKeys.Control) != 0 && key >= Key.A && key <= Key.Z)
+        {
+            bytes = [(byte)(key - Key.A + 1)];
+        }
+        // Alt+key → ESC prefix + character
+        else if ((mod & ModifierKeys.Alt) != 0 && key >= Key.A && key <= Key.Z)
+        {
+            var ch = (mod & ModifierKeys.Shift) != 0
+                ? (char)('A' + key - Key.A)
+                : (char)('a' + key - Key.A);
+            bytes = [(byte)'\x1B', (byte)ch];
+        }
+        // Special keys
+        else if (mod == ModifierKeys.None || mod == ModifierKeys.Shift)
+        {
+            bytes = key switch
+            {
+                Key.Enter  => "\r"u8.ToArray(),
+                Key.Back   => [0x7F],
+                Key.Tab    => "\t"u8.ToArray(),
+                Key.Escape => [0x1B],
+                Key.Up     => "\x1B[A"u8.ToArray(),
+                Key.Down   => "\x1B[B"u8.ToArray(),
+                Key.Right  => "\x1B[C"u8.ToArray(),
+                Key.Left   => "\x1B[D"u8.ToArray(),
+                Key.Home   => "\x1B[H"u8.ToArray(),
+                Key.End    => "\x1B[F"u8.ToArray(),
+                Key.Delete => "\x1B[3~"u8.ToArray(),
+                Key.Insert => "\x1B[2~"u8.ToArray(),
+                Key.PageUp   => "\x1B[5~"u8.ToArray(),
+                Key.PageDown => "\x1B[6~"u8.ToArray(),
+                Key.F1  => "\x1BOP"u8.ToArray(),
+                Key.F2  => "\x1BOQ"u8.ToArray(),
+                Key.F3  => "\x1BOR"u8.ToArray(),
+                Key.F4  => "\x1BOS"u8.ToArray(),
+                Key.F5  => "\x1B[15~"u8.ToArray(),
+                Key.F6  => "\x1B[17~"u8.ToArray(),
+                Key.F7  => "\x1B[18~"u8.ToArray(),
+                Key.F8  => "\x1B[19~"u8.ToArray(),
+                Key.F9  => "\x1B[20~"u8.ToArray(),
+                Key.F10 => "\x1B[21~"u8.ToArray(),
+                Key.F11 => "\x1B[23~"u8.ToArray(),
+                Key.F12 => "\x1B[24~"u8.ToArray(),
+                Key.Space => " "u8.ToArray(),
+                _ => null
+            };
+        }
+
+        if (bytes != null)
+        {
+            _ = WriteToShellAsync(bytes);
+            e.Handled = true;
+        }
+    }
+
+    private async Task WriteToShellAsync(byte[] bytes)
+    {
+        try
+        {
+            if (_shellStream != null)
+            {
+                await _shellStream.WriteAsync(bytes, 0, bytes.Length);
+                await _shellStream.FlushAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogDebug(ex, "Failed to write to shell stream");
         }
     }
 

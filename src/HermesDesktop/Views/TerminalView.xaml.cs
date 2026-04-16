@@ -73,14 +73,14 @@ public partial class TerminalView : UserControl
         activeTab.TerminalControl.Visibility = Visibility.Visible;
 
         // Ensure the terminal gets keyboard focus
-        _ = FocusTerminalAsync(activeTab.TerminalControl);
+        FocusTerminalAsync(activeTab.TerminalControl);
     }
 
-    private async Task FocusTerminalAsync(TerminalControl control)
+    private void FocusTerminalAsync(TerminalControl control)
     {
-        // Give the UI a moment to settle, then focus the WebView2
-        await Task.Delay(100);
-        Dispatcher.Invoke(() => control.Focus());
+        // ContextIdle fires after layout/render — more reliable than an arbitrary delay
+        Dispatcher.InvokeAsync(() => control.Focus(),
+            System.Windows.Threading.DispatcherPriority.ContextIdle);
     }
 
     private async Task AttachSessionDelayedAsync(TerminalControl control, TerminalTabViewModel tab)

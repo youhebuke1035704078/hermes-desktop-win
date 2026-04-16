@@ -56,18 +56,18 @@
         // Encode as base64 for safe transport through JS interop
         var bytes = new TextEncoder().encode(data);
         var base64 = btoa(String.fromCharCode.apply(null, bytes));
-        window.chrome.webview.postMessage(JSON.stringify({
+        window.chrome.webview.postMessage({
             type: 'input',
             data: base64
-        }));
+        });
     });
 
     terminal.onBinary(function (data) {
         var base64 = btoa(data);
-        window.chrome.webview.postMessage(JSON.stringify({
+        window.chrome.webview.postMessage({
             type: 'input',
             data: base64
-        }));
+        });
     });
 
     // === Resize: xterm.js -> C# ===
@@ -77,11 +77,11 @@
         if (resizeTimer) clearTimeout(resizeTimer);
         resizeTimer = setTimeout(function () {
             fitAddon.fit();
-            window.chrome.webview.postMessage(JSON.stringify({
+            window.chrome.webview.postMessage({
                 type: 'resize',
                 cols: terminal.cols,
                 rows: terminal.rows
-            }));
+            });
         }, 100);
     });
     resizeObserver.observe(document.getElementById('terminal'));
@@ -111,10 +111,20 @@
         terminal.focus();
     };
 
+    // Ensure xterm.js has DOM focus whenever the browser receives interaction.
+    // WebView2 in WPF gives this HWND Win32 focus on click, but xterm.js needs
+    // its hidden textarea focused to capture keyboard events.
+    document.addEventListener('mousedown', function () {
+        setTimeout(function () { terminal.focus(); }, 0);
+    });
+    window.addEventListener('focus', function () {
+        terminal.focus();
+    });
+
     // Signal ready
-    window.chrome.webview.postMessage(JSON.stringify({
+    window.chrome.webview.postMessage({
         type: 'ready',
         cols: terminal.cols,
         rows: terminal.rows
-    }));
+    });
 })();

@@ -94,7 +94,8 @@
                       VerticalAlignment="Stretch" Background="{DynamicResource SplitterBrush}"/>
 
         <!-- Content area -->
-        <ContentControl Grid.Column="2" Content="{Binding CurrentContentViewModel}" Margin="0"/>
+        <ContentControl Grid.Column="2" Content="{Binding CurrentContentViewModel}" Margin="0"
+                        HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>
 
         <!-- Unsaved changes dialog overlay -->
         <Border Grid.ColumnSpan="3" Background="{DynamicResource OverlayBackground}"

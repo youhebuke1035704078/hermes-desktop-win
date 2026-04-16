@@ -43,7 +43,8 @@
             </ListView>
         </DockPanel>
 
-        <GridSplitter Grid.Column="1" Width="3" Background="{DynamicResource SplitterBrush}" Margin="8,0"/>
+        <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Center"
+                      VerticalAlignment="Stretch" Background="{DynamicResource SplitterBrush}" Margin="8,0"/>
 
         <!-- Right: skill detail -->
         <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
