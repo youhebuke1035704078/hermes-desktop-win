@@ -25,6 +25,22 @@ Grab the latest `HermesDesktop.exe` from [**Releases**](https://github.com/acegr
 
 ---
 
+## Screenshots
+
+| Overview | Sessions |
+|----------|----------|
+| ![Overview](screenshots/overview.png) | ![Sessions](screenshots/sessions.png) |
+
+| Usage | Skills |
+|-------|--------|
+| ![Usage](screenshots/usage.png) | ![Skills](screenshots/skills.png) |
+
+| Terminal |
+|----------|
+| ![Terminal](screenshots/terminal.png) |
+
+---
+
 ## Requirements
 
 **Your machine (Windows):**
