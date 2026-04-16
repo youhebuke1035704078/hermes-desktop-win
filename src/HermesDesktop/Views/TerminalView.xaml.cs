@@ -71,6 +71,16 @@ public partial class TerminalView : UserControl
         }
 
         activeTab.TerminalControl.Visibility = Visibility.Visible;
+
+        // Ensure the terminal gets keyboard focus
+        _ = FocusTerminalAsync(activeTab.TerminalControl);
+    }
+
+    private async Task FocusTerminalAsync(TerminalControl control)
+    {
+        // Give the UI a moment to settle, then focus the WebView2
+        await Task.Delay(100);
+        Dispatcher.Invoke(() => control.Focus());
     }
 
     private async Task AttachSessionDelayedAsync(TerminalControl control, TerminalTabViewModel tab)
@@ -78,6 +88,15 @@ public partial class TerminalView : UserControl
         // Wait a moment for WebView2 to finish initializing
         await Task.Delay(500);
         control.AttachSession(tab.Session.Stream, tab.Session.Client);
+    }
+
+    private void TerminalHostGrid_MouseDown(object sender, MouseButtonEventArgs e)
+    {
+        // Clicking in the terminal area should focus the active terminal
+        if (_vm?.ActiveTab?.TerminalControl is { } control)
+        {
+            control.Focus();
+        }
     }
 
     private void TabHeader_Click(object sender, MouseButtonEventArgs e)

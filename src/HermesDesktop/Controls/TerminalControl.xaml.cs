@@ -2,6 +2,7 @@ using System.IO;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using Microsoft.Extensions.Logging;
 using Microsoft.Web.WebView2.Core;
 using Renci.SshNet;
@@ -202,6 +203,11 @@ public partial class TerminalControl : UserControl, IDisposable
 
     public new void Focus()
     {
+        // Focus the WPF WebView2 control so it receives keyboard input
+        TerminalWebView.Focus();
+        Keyboard.Focus(TerminalWebView);
+
+        // Also focus xterm.js inside the WebView2
         if (TerminalWebView.CoreWebView2 != null)
         {
             _ = TerminalWebView.CoreWebView2.ExecuteScriptAsync("terminalFocus()");

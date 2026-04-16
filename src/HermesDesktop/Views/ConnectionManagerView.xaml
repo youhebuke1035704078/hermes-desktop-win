@@ -3,13 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid>
         <!-- Delete confirmation overlay -->
-        <Border Background="#80000000" Panel.ZIndex="100"
+        <Border Background="{DynamicResource OverlayBackground}" Panel.ZIndex="100"
                 Visibility="{Binding ShowDeleteConfirmation, Converter={StaticResource BoolToVisibility}}">
-            <Border Background="White" CornerRadius="8" Padding="24" MaxWidth="400"
-                    VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Border Background="{DynamicResource DialogBackground}" CornerRadius="8" Padding="24" MaxWidth="400"
+                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                    BorderBrush="{DynamicResource PanelBorder}" BorderThickness="1">
                 <StackPanel>
-                    <TextBlock Text="Delete this connection?" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8"/>
-                    <TextBlock FontSize="13" Foreground="#666" TextWrapping="Wrap" Margin="0,0,0,20">
+                    <TextBlock Text="Delete this connection?" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8"
+                               Foreground="{DynamicResource TextPrimary}"/>
+                    <TextBlock FontSize="13" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" Margin="0,0,0,20">
                         <Run Text="Are you sure you want to delete "/>
                         <Run Text="{Binding PendingDeleteConnection.Label, Mode=OneWay}" FontWeight="SemiBold"/>
                         <Run Text="? This cannot be undone."/>
@@ -18,32 +20,37 @@
                         <Button Content="Cancel" Command="{Binding CancelDeleteConnectionCommand}"
                                 Padding="16,6" Margin="0,0,8,0"/>
                         <Button Content="Delete" Command="{Binding ConfirmDeleteConnectionCommand}"
-                                Padding="16,6" Foreground="#C00"/>
+                                Padding="16,6" Style="{StaticResource DangerButton}"/>
                     </StackPanel>
                 </StackPanel>
             </Border>
         </Border>
 
         <!-- SSH config import overlay -->
-        <Border Background="#80000000" Panel.ZIndex="99"
+        <Border Background="{DynamicResource OverlayBackground}" Panel.ZIndex="99"
                 Visibility="{Binding ShowSshConfigImport, Converter={StaticResource BoolToVisibility}}">
-            <Border Background="White" CornerRadius="8" Padding="24" MaxWidth="500" MaxHeight="500"
-                    VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Border Background="{DynamicResource DialogBackground}" CornerRadius="8" Padding="24" MaxWidth="500" MaxHeight="500"
+                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                    BorderBrush="{DynamicResource PanelBorder}" BorderThickness="1">
                 <DockPanel>
-                    <TextBlock DockPanel.Dock="Top" Text="Import from SSH Config" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                    <TextBlock DockPanel.Dock="Top" Text="Select a host to import as a connection profile." FontSize="12" Foreground="#888" Margin="0,0,0,12"/>
+                    <TextBlock DockPanel.Dock="Top" Text="Import from SSH Config" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,4"
+                               Foreground="{DynamicResource TextPrimary}"/>
+                    <TextBlock DockPanel.Dock="Top" Text="Select a host to import as a connection profile." FontSize="12"
+                               Foreground="{DynamicResource TextTertiary}" Margin="0,0,0,12"/>
                     <Button DockPanel.Dock="Bottom" Content="Cancel" Command="{Binding CloseSshConfigImportCommand}"
                             Padding="16,6" HorizontalAlignment="Right" Margin="0,12,0,0"/>
-                    <ListView ItemsSource="{Binding SshConfigEntries}" BorderThickness="1" BorderBrush="#DDD">
+                    <ListView ItemsSource="{Binding SshConfigEntries}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <DockPanel Margin="4,4">
                                     <Button DockPanel.Dock="Right" Content="Import" Padding="10,3" FontSize="12"
+                                            Style="{StaticResource AccentButton}"
                                             Command="{Binding DataContext.ImportSshConfigEntryCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
                                             CommandParameter="{Binding}"/>
                                     <StackPanel>
-                                        <TextBlock Text="{Binding Alias}" FontSize="13" FontWeight="Medium"/>
-                                        <TextBlock FontSize="11" Foreground="#888">
+                                        <TextBlock Text="{Binding Alias}" FontSize="13" FontWeight="Medium"
+                                                   Foreground="{DynamicResource TextPrimary}"/>
+                                        <TextBlock FontSize="11" Foreground="{DynamicResource TextTertiary}">
                                             <Run Text="{Binding User, Mode=OneWay, TargetNullValue=''}"/>
                                             <Run Text="@"/>
                                             <Run Text="{Binding HostName, Mode=OneWay, TargetNullValue=''}"/>
@@ -66,31 +73,36 @@
 
         <!-- Header -->
         <DockPanel Grid.Row="0" Margin="0,0,0,16">
-            <TextBlock Text="Connections" FontSize="22" FontWeight="SemiBold" DockPanel.Dock="Left"/>
+            <TextBlock Text="Connections" FontSize="22" FontWeight="SemiBold" DockPanel.Dock="Left"
+                       Foreground="{DynamicResource TextPrimary}"/>
             <Button Content="Import SSH Config" Command="{Binding OpenSshConfigImportCommand}"
                     HorizontalAlignment="Right" Padding="12,6" FontSize="12" Margin="0,0,8,0"/>
             <Button Content="New Connection" Command="{Binding NewConnectionCommand}"
-                    HorizontalAlignment="Right" Padding="16,6" FontSize="13"/>
+                    HorizontalAlignment="Right" Padding="16,6" FontSize="13"
+                    Style="{StaticResource AccentButton}"/>
         </DockPanel>
 
         <!-- Connection list (when not editing) -->
         <ListView Grid.Row="1" ItemsSource="{Binding Connections}"
-                  Visibility="{Binding IsEditing, Converter={StaticResource InverseBoolToVisibility}}"
-                  BorderThickness="1" BorderBrush="#DDD">
+                  Visibility="{Binding IsEditing, Converter={StaticResource InverseBoolToVisibility}}">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <DockPanel Margin="8,6">
                         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
                             <Button Content="Connect" Command="{Binding DataContext.ConnectToCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
-                                    CommandParameter="{Binding}" Margin="0,0,8,0" Padding="12,4" FontSize="12"/>
+                                    CommandParameter="{Binding}" Margin="0,0,8,0" Padding="12,4" FontSize="12"
+                                    Style="{StaticResource AccentButton}"/>
                             <Button Content="Edit" Command="{Binding DataContext.EditConnectionCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
                                     CommandParameter="{Binding}" Margin="0,0,8,0" Padding="12,4" FontSize="12"/>
                             <Button Content="Delete" Command="{Binding DataContext.RequestDeleteConnectionCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
-                                    CommandParameter="{Binding}" Padding="12,4" FontSize="12" Foreground="#C00"/>
+                                    CommandParameter="{Binding}" Padding="12,4" FontSize="12"
+                                    Style="{StaticResource DangerButton}"/>
                         </StackPanel>
                         <StackPanel>
-                            <TextBlock Text="{Binding Label}" FontSize="14" FontWeight="Medium"/>
-                            <TextBlock Text="{Binding DisplayTarget}" FontSize="12" Foreground="#888" Margin="0,2,0,0"/>
+                            <TextBlock Text="{Binding Label}" FontSize="14" FontWeight="Medium"
+                                       Foreground="{DynamicResource TextPrimary}"/>
+                            <TextBlock Text="{Binding DisplayTarget}" FontSize="12"
+                                       Foreground="{DynamicResource TextTertiary}" Margin="0,2,0,0"/>
                         </StackPanel>
                     </DockPanel>
                 </DataTemplate>
@@ -99,32 +111,35 @@
 
         <!-- Editor panel (when editing) -->
         <Border Grid.Row="1" Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibility}}"
-                BorderThickness="1" BorderBrush="#DDD" Padding="24" Background="White" CornerRadius="4">
+                BorderThickness="1" BorderBrush="{DynamicResource PanelBorder}" Padding="24"
+                Background="{DynamicResource PanelBackground}" CornerRadius="8">
             <StackPanel MaxWidth="500">
-                <TextBlock Text="Connection Details" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"/>
+                <TextBlock Text="Connection Details" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"
+                           Foreground="{DynamicResource TextPrimary}"/>
 
-                <TextBlock Text="Label" FontSize="12" Foreground="#666" Margin="0,0,0,4"/>
+                <TextBlock Text="Label" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
                 <TextBox Text="{Binding EditLabel, UpdateSourceTrigger=PropertyChanged}" Padding="8,6" FontSize="13" Margin="0,0,0,12"/>
 
-                <TextBlock Text="Host / IP" FontSize="12" Foreground="#666" Margin="0,0,0,4"/>
+                <TextBlock Text="Host / IP" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
                 <TextBox Text="{Binding EditHost, UpdateSourceTrigger=PropertyChanged}" Padding="8,6" FontSize="13" Margin="0,0,0,12"/>
 
-                <TextBlock Text="Username" FontSize="12" Foreground="#666" Margin="0,0,0,4"/>
+                <TextBlock Text="Username" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
                 <TextBox Text="{Binding EditUser, UpdateSourceTrigger=PropertyChanged}" Padding="8,6" FontSize="13" Margin="0,0,0,12"/>
 
-                <TextBlock Text="Port" FontSize="12" Foreground="#666" Margin="0,0,0,4"/>
+                <TextBlock Text="Port" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
                 <TextBox Text="{Binding EditPort, UpdateSourceTrigger=PropertyChanged}" Padding="8,6" FontSize="13" Margin="0,0,0,12" Width="100" HorizontalAlignment="Left"/>
 
-                <TextBlock Text="SSH Key Path (optional)" FontSize="12" Foreground="#666" Margin="0,0,0,4"/>
+                <TextBlock Text="SSH Key Path (optional)" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
                 <TextBox Text="{Binding EditKeyPath, UpdateSourceTrigger=PropertyChanged}" Padding="8,6" FontSize="13" Margin="0,0,0,16"/>
 
                 <!-- Test result -->
-                <TextBlock Text="{Binding TestResult}" FontSize="12" Foreground="#666" Margin="0,0,0,12"
+                <TextBlock Text="{Binding TestResult}" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,12"
                            Visibility="{Binding TestResult, Converter={StaticResource NullToVisibility}}"
                            TextWrapping="Wrap"/>
 
                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                    <Button Content="Save" Command="{Binding SaveConnectionCommand}" Padding="16,6" FontSize="13" Margin="0,0,8,0"/>
+                    <Button Content="Save" Command="{Binding SaveConnectionCommand}" Padding="16,6" FontSize="13" Margin="0,0,8,0"
+                            Style="{StaticResource AccentButton}"/>
                     <Button Content="Test" Command="{Binding TestConnectionCommand}" Padding="16,6" FontSize="13" Margin="0,0,8,0"/>
                     <Button Content="Cancel" Command="{Binding CancelEditCommand}" Padding="16,6" FontSize="13"/>
                 </StackPanel>

@@ -4,10 +4,11 @@
              xmlns:vm="clr-namespace:HermesDesktop.ViewModels">
     <DockPanel>
         <!-- Tab bar -->
-        <Border DockPanel.Dock="Top" Background="#2D2D2D" Padding="4,4,4,0">
+        <Border DockPanel.Dock="Top" Background="{DynamicResource PanelBackground}" Padding="4,4,4,0"
+                BorderBrush="{DynamicResource PanelBorder}" BorderThickness="0,0,0,1">
             <DockPanel>
                 <Button DockPanel.Dock="Right" Content=" + " FontSize="16" FontWeight="Bold"
-                        Foreground="#CCC" Background="Transparent" BorderThickness="0"
+                        Foreground="{DynamicResource TextPrimary}" Background="Transparent" BorderThickness="0"
                         Padding="10,4" Cursor="Hand" Command="{Binding NewTabCommand}"
                         ToolTip="New terminal tab"/>
                 <ItemsControl ItemsSource="{Binding Tabs}">
@@ -18,28 +19,16 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="{x:Type vm:TerminalTabViewModel}">
-                            <Border Padding="10,6" Margin="0,0,1,0" CornerRadius="4,4,0,0"
-                                    Cursor="Hand" MouseLeftButtonUp="TabHeader_Click">
-                                <Border.Style>
-                                    <Style TargetType="Border">
-                                        <Setter Property="Background" Value="#3D3D3D"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsActive}" Value="True">
-                                                <Setter Property="Background" Value="#1E1E1E"/>
-                                            </DataTrigger>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="#4D4D4D"/>
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Border.Style>
+                            <Border Padding="10,6" Margin="0,0,1,0" CornerRadius="6,6,0,0"
+                                    Cursor="Hand" MouseLeftButtonUp="TabHeader_Click"
+                                    Background="{Binding IsActive, Converter={StaticResource TabActiveToBrush}}">
                                 <DockPanel>
                                     <Button DockPanel.Dock="Right" Content=" x " FontSize="10"
-                                            Foreground="#888" Background="Transparent" BorderThickness="0"
+                                            Foreground="{DynamicResource TextTertiary}" Background="Transparent" BorderThickness="0"
                                             Margin="8,0,0,0" Cursor="Hand" VerticalAlignment="Center"
                                             Command="{Binding DataContext.CloseTabCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding}"/>
-                                    <TextBlock Text="{Binding Title}" Foreground="#CCC" FontSize="12"
+                                    <TextBlock Text="{Binding Title}" Foreground="{DynamicResource TextPrimary}" FontSize="12"
                                                VerticalAlignment="Center"/>
                                 </DockPanel>
                             </Border>
@@ -50,32 +39,34 @@
         </Border>
 
         <!-- Error message -->
-        <Border DockPanel.Dock="Top" Background="#442222" Padding="12,6"
+        <Border DockPanel.Dock="Top" Background="{DynamicResource ErrorBannerBackground}" Padding="12,6"
                 Visibility="{Binding ErrorMessage, Converter={StaticResource NullToVisibility}}">
-            <TextBlock Text="{Binding ErrorMessage}" Foreground="#FF8888" FontSize="12"/>
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource ErrorText}" FontSize="12"/>
         </Border>
 
         <!-- Status bar (exit code, reconnect) -->
-        <Border DockPanel.Dock="Bottom" Background="#2D2D2D" Padding="8,4"
+        <Border DockPanel.Dock="Bottom" Background="{DynamicResource PanelBackground}" Padding="8,4"
+                BorderBrush="{DynamicResource PanelBorder}" BorderThickness="0,1,0,0"
                 Visibility="{Binding ActiveTab.IsDisconnected, Converter={StaticResource BoolToVisibility}, FallbackValue=Collapsed}">
             <DockPanel>
-                <Button DockPanel.Dock="Right" Content="Reconnect" Foreground="#4FC3F7"
-                        Background="Transparent" BorderBrush="#4FC3F7" BorderThickness="1"
+                <Button DockPanel.Dock="Right" Content="Reconnect" Foreground="{DynamicResource LinkForeground}"
+                        Background="Transparent" BorderBrush="{DynamicResource LinkForeground}" BorderThickness="1"
                         Padding="12,4" Cursor="Hand" FontSize="12"
                         Command="{Binding ActiveTab.ReconnectCommand}"/>
-                <TextBlock Text="{Binding ActiveTab.StatusText}" Foreground="#FF8888"
+                <TextBlock Text="{Binding ActiveTab.StatusText}" Foreground="{DynamicResource ErrorText}"
                            FontSize="12" VerticalAlignment="Center" FontFamily="Consolas"/>
             </DockPanel>
         </Border>
 
-        <!-- Terminal content area - managed in code-behind -->
-        <Grid x:Name="TerminalHostGrid" Background="#1E1E1E">
+        <!-- Terminal content area - managed in code-behind (always dark) -->
+        <Grid x:Name="TerminalHostGrid" Background="#0F1011"
+              MouseLeftButtonDown="TerminalHostGrid_MouseDown">
             <!-- Empty state -->
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
                         x:Name="EmptyState">
-                <TextBlock Text="No terminal sessions" Foreground="#666" FontSize="16"
+                <TextBlock Text="No terminal sessions" Foreground="{DynamicResource TextTertiary}" FontSize="16"
                            FontFamily="Consolas" HorizontalAlignment="Center" Margin="0,0,0,8"/>
-                <TextBlock Text="Click + to open a new terminal tab" Foreground="#555"
+                <TextBlock Text="Click + to open a new terminal tab" Foreground="{DynamicResource TextMuted}"
                            FontSize="13" FontFamily="Consolas" HorizontalAlignment="Center"/>
             </StackPanel>
         </Grid>

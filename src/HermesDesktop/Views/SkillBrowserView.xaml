@@ -11,28 +11,30 @@
 
         <!-- Left: skill list -->
         <DockPanel Grid.Column="0">
-            <TextBlock DockPanel.Dock="Top" Text="Skills" FontSize="22" FontWeight="SemiBold" Margin="0,0,0,12"/>
+            <TextBlock DockPanel.Dock="Top" Text="Skills" FontSize="22" FontWeight="SemiBold" Margin="0,0,0,12"
+                       Foreground="{DynamicResource TextPrimary}"/>
 
             <TextBox DockPanel.Dock="Top" Text="{Binding FilterQuery, UpdateSourceTrigger=PropertyChanged, Delay=200}"
                      Padding="8,6" FontSize="13" Margin="0,0,0,8"/>
 
-            <TextBlock DockPanel.Dock="Top" Text="Loading skills..." Foreground="#888"
+            <TextBlock DockPanel.Dock="Top" Text="Loading skills..." Foreground="{DynamicResource TextTertiary}"
                        Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}"/>
 
-            <ListView ItemsSource="{Binding FilteredSkills}" SelectedItem="{Binding SelectedSkill}"
-                      BorderThickness="1" BorderBrush="#DDD">
+            <ListView ItemsSource="{Binding FilteredSkills}" SelectedItem="{Binding SelectedSkill}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Margin="4,6">
-                            <TextBlock Text="{Binding DisplayName}" FontSize="13" FontWeight="Medium"/>
+                            <TextBlock Text="{Binding DisplayName}" FontSize="13" FontWeight="Medium"
+                                       Foreground="{DynamicResource TextPrimary}"/>
                             <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
-                                <Border Background="#E8EAF6" CornerRadius="3" Padding="6,1" Margin="0,0,6,0">
-                                    <TextBlock Text="{Binding DisplayCategory}" FontSize="10" Foreground="#3949AB"/>
+                                <Border Background="{DynamicResource BadgePrimaryBackground}" CornerRadius="3" Padding="6,1" Margin="0,0,6,0">
+                                    <TextBlock Text="{Binding DisplayCategory}" FontSize="10"
+                                               Foreground="{DynamicResource BadgePrimaryForeground}"/>
                                 </Border>
-                                <TextBlock Text="{Binding Version}" FontSize="10" Foreground="#AAA"
+                                <TextBlock Text="{Binding Version}" FontSize="10" Foreground="{DynamicResource TextMuted}"
                                            Visibility="{Binding Version, Converter={StaticResource NullToVisibility}}"/>
                             </StackPanel>
-                            <TextBlock Text="{Binding Description}" FontSize="11" Foreground="#AAA"
+                            <TextBlock Text="{Binding Description}" FontSize="11" Foreground="{DynamicResource TextMuted}"
                                        TextTrimming="CharacterEllipsis" MaxWidth="250" Margin="0,2,0,0"
                                        Visibility="{Binding Description, Converter={StaticResource NullToVisibility}}"/>
                         </StackPanel>
@@ -41,13 +43,13 @@
             </ListView>
         </DockPanel>
 
-        <GridSplitter Grid.Column="1" Width="3" Background="#DDD" Margin="8,0"/>
+        <GridSplitter Grid.Column="1" Width="3" Background="{DynamicResource SplitterBrush}" Margin="8,0"/>
 
         <!-- Right: skill detail -->
         <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
             <DockPanel>
                 <!-- Empty state -->
-                <TextBlock Text="Select a skill to view details" FontSize="14" Foreground="#888"
+                <TextBlock Text="Select a skill to view details" FontSize="14" Foreground="{DynamicResource TextTertiary}"
                            VerticalAlignment="Center" HorizontalAlignment="Center"
                            DockPanel.Dock="Top">
                     <TextBlock.Style>
@@ -65,30 +67,33 @@
                 <!-- Detail content -->
                 <StackPanel Visibility="{Binding SelectedSkill, Converter={StaticResource NullToVisibility}}">
                     <!-- Header -->
-                    <TextBlock Text="{Binding SelectedSkill.DisplayName}" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <TextBlock Text="{Binding SelectedSkill.DisplayName}" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,4"
+                               Foreground="{DynamicResource TextPrimary}"/>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                        <Border Background="#E8EAF6" CornerRadius="3" Padding="8,2" Margin="0,0,8,0">
-                            <TextBlock Text="{Binding SelectedSkill.DisplayCategory}" FontSize="11" Foreground="#3949AB"/>
+                        <Border Background="{DynamicResource BadgePrimaryBackground}" CornerRadius="3" Padding="8,2" Margin="0,0,8,0">
+                            <TextBlock Text="{Binding SelectedSkill.DisplayCategory}" FontSize="11"
+                                       Foreground="{DynamicResource BadgePrimaryForeground}"/>
                         </Border>
-                        <TextBlock Text="{Binding SelectedSkill.Version}" FontSize="12" Foreground="#888"
+                        <TextBlock Text="{Binding SelectedSkill.Version}" FontSize="12" Foreground="{DynamicResource TextTertiary}"
                                    VerticalAlignment="Center"
                                    Visibility="{Binding SelectedSkill.Version, Converter={StaticResource NullToVisibility}}"/>
                     </StackPanel>
 
                     <!-- Description -->
-                    <TextBlock Text="{Binding SelectedSkill.Description}" FontSize="13" Foreground="#555"
+                    <TextBlock Text="{Binding SelectedSkill.Description}" FontSize="13" Foreground="{DynamicResource TextSecondary}"
                                TextWrapping="Wrap" Margin="0,0,0,12"
                                Visibility="{Binding SelectedSkill.Description, Converter={StaticResource NullToVisibility}}"/>
 
                     <!-- Metadata -->
-                    <Border Background="#F8F8F8" CornerRadius="4" Padding="12" Margin="0,0,0,12">
+                    <Border Background="{DynamicResource CardBackground}" CornerRadius="6" Padding="12" Margin="0,0,0,12"
+                            BorderBrush="{DynamicResource PanelBorder}" BorderThickness="1">
                         <StackPanel>
-                            <TextBlock FontSize="12" Margin="0,0,0,4">
-                                <Run Text="Slug: " Foreground="#888"/>
+                            <TextBlock FontSize="12" Margin="0,0,0,4" Foreground="{DynamicResource TextSecondary}">
+                                <Run Text="Slug: " Foreground="{DynamicResource TextTertiary}"/>
                                 <Run Text="{Binding SelectedSkill.Slug, Mode=OneWay}" FontFamily="Consolas"/>
                             </TextBlock>
-                            <TextBlock FontSize="12">
-                                <Run Text="Path: " Foreground="#888"/>
+                            <TextBlock FontSize="12" Foreground="{DynamicResource TextSecondary}">
+                                <Run Text="Path: " Foreground="{DynamicResource TextTertiary}"/>
                                 <Run Text="{Binding SelectedSkill.RelativePath, Mode=OneWay}" FontFamily="Consolas"/>
                             </TextBlock>
                         </StackPanel>
@@ -103,15 +108,15 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Border Background="#E3F2FD" CornerRadius="3" Padding="8,2" Margin="0,0,4,4">
-                                    <TextBlock Text="{Binding}" FontSize="11" Foreground="#1565C0"/>
+                                <Border Background="{DynamicResource BadgeInfoBackground}" CornerRadius="3" Padding="8,2" Margin="0,0,4,4">
+                                    <TextBlock Text="{Binding}" FontSize="11" Foreground="{DynamicResource BadgeInfoForeground}"/>
                                 </Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
                     <!-- Loading detail -->
-                    <TextBlock Text="Loading skill content..." Foreground="#888" Margin="0,0,0,8"
+                    <TextBlock Text="Loading skill content..." Foreground="{DynamicResource TextTertiary}" Margin="0,0,0,8"
                                Visibility="{Binding IsLoadingDetail, Converter={StaticResource BoolToVisibility}}"/>
 
                     <!-- Markdown content -->

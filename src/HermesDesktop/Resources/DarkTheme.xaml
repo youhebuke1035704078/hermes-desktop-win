@@ -1,22 +1,78 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <SolidColorBrush x:Key="WindowBackground" Color="#1E1E1E"/>
-    <SolidColorBrush x:Key="SidebarBackground" Color="#252526"/>
-    <SolidColorBrush x:Key="SidebarBorder" Color="#3C3C3C"/>
-    <SolidColorBrush x:Key="SidebarHover" Color="#2A2D2E"/>
-    <SolidColorBrush x:Key="SidebarSelected" Color="#37373D"/>
-    <SolidColorBrush x:Key="TextPrimary" Color="#CCCCCC"/>
-    <SolidColorBrush x:Key="TextSecondary" Color="#999999"/>
-    <SolidColorBrush x:Key="TextTertiary" Color="#777777"/>
-    <SolidColorBrush x:Key="TextMuted" Color="#555555"/>
-    <SolidColorBrush x:Key="PanelBackground" Color="#2D2D2D"/>
-    <SolidColorBrush x:Key="PanelBorder" Color="#3C3C3C"/>
-    <SolidColorBrush x:Key="CardBackground" Color="#333333"/>
+
+    <!-- Base surfaces (Linear-inspired dark palette) -->
+    <SolidColorBrush x:Key="WindowBackground" Color="#0F1011"/>
+    <SolidColorBrush x:Key="SidebarBackground" Color="#0F1011"/>
+    <SolidColorBrush x:Key="SidebarBorder" Color="#23252A"/>
+    <SolidColorBrush x:Key="SidebarHover" Color="#191A1B"/>
+    <SolidColorBrush x:Key="SidebarSelected" Color="#28282C"/>
+    <SolidColorBrush x:Key="PanelBackground" Color="#191A1B"/>
+    <SolidColorBrush x:Key="PanelBorder" Color="#23252A"/>
+    <SolidColorBrush x:Key="CardBackground" Color="#28282C"/>
+    <SolidColorBrush x:Key="DialogBackground" Color="#191A1B"/>
+    <SolidColorBrush x:Key="SplitterBrush" Color="#23252A"/>
+    <SolidColorBrush x:Key="OverlayBackground" Color="#CC000000"/>
+
+    <!-- Text hierarchy -->
+    <SolidColorBrush x:Key="TextPrimary" Color="#F7F8F8"/>
+    <SolidColorBrush x:Key="TextSecondary" Color="#D0D6E0"/>
+    <SolidColorBrush x:Key="TextTertiary" Color="#8A8F98"/>
+    <SolidColorBrush x:Key="TextMuted" Color="#62666D"/>
+
+    <!-- Status -->
     <SolidColorBrush x:Key="ErrorText" Color="#FF6B6B"/>
     <SolidColorBrush x:Key="WarningBackground" Color="#3D3520"/>
     <SolidColorBrush x:Key="WarningBorder" Color="#5C4D2C"/>
     <SolidColorBrush x:Key="WarningText" Color="#FFD666"/>
-    <SolidColorBrush x:Key="SplitterBrush" Color="#3C3C3C"/>
-    <SolidColorBrush x:Key="OverlayBackground" Color="#CC000000"/>
-    <SolidColorBrush x:Key="DialogBackground" Color="#2D2D2D"/>
+
+    <!-- Buttons -->
+    <SolidColorBrush x:Key="ButtonBackground" Color="#323236"/>
+    <SolidColorBrush x:Key="ButtonBackgroundHover" Color="#3E3E44"/>
+    <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#28282C"/>
+    <SolidColorBrush x:Key="ButtonForeground" Color="#E2E4E7"/>
+    <SolidColorBrush x:Key="AccentBackground" Color="#5E6AD2"/>
+    <SolidColorBrush x:Key="AccentBackgroundHover" Color="#828FFF"/>
+    <SolidColorBrush x:Key="AccentForeground" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="DangerBackground" Color="#DC3545"/>
+    <SolidColorBrush x:Key="DangerForeground" Color="#FF6B6B"/>
+
+    <!-- Inputs -->
+    <SolidColorBrush x:Key="InputBackground" Color="#191A1B"/>
+    <SolidColorBrush x:Key="InputBorder" Color="#34343A"/>
+    <SolidColorBrush x:Key="InputBorderFocused" Color="#7170FF"/>
+
+    <!-- Lists -->
+    <SolidColorBrush x:Key="ListItemHover" Color="#28282C"/>
+    <SolidColorBrush x:Key="ListItemSelected" Color="#2A2D4A"/>
+    <SolidColorBrush x:Key="ListItemSelectedText" Color="#F7F8F8"/>
+
+    <!-- Chat bubbles -->
+    <SolidColorBrush x:Key="BubbleUserBackground" Color="#1E2A4A"/>
+    <SolidColorBrush x:Key="BubbleAssistantBackground" Color="#1A2E1A"/>
+    <SolidColorBrush x:Key="BubbleSystemBackground" Color="#28282C"/>
+
+    <!-- Badges -->
+    <SolidColorBrush x:Key="BadgePrimaryBackground" Color="#2A2D4A"/>
+    <SolidColorBrush x:Key="BadgePrimaryForeground" Color="#828FFF"/>
+    <SolidColorBrush x:Key="BadgeInfoBackground" Color="#1A3A5C"/>
+    <SolidColorBrush x:Key="BadgeInfoForeground" Color="#64B5F6"/>
+
+    <!-- Charts -->
+    <SolidColorBrush x:Key="ChartBackground" Color="#191A1B"/>
+    <SolidColorBrush x:Key="ChartBorder" Color="#34343A"/>
+    <SolidColorBrush x:Key="HighlightCardBackground" Color="#1E2A3A"/>
+
+    <!-- Misc -->
+    <SolidColorBrush x:Key="ErrorBannerBackground" Color="#3D2020"/>
+    <SolidColorBrush x:Key="LinkForeground" Color="#7170FF"/>
+    <SolidColorBrush x:Key="TerminalTabBackground" Color="#28282C"/>
+    <SolidColorBrush x:Key="TerminalTabActive" Color="#0F1011"/>
+    <SolidColorBrush x:Key="TerminalTabHover" Color="#34343A"/>
+
+    <!-- Scrollbar -->
+    <SolidColorBrush x:Key="ScrollBarThumb" Color="#4A4A4A"/>
+    <SolidColorBrush x:Key="ScrollBarThumbHover" Color="#62666D"/>
+    <SolidColorBrush x:Key="ScrollBarTrack" Color="Transparent"/>
+
 </ResourceDictionary>

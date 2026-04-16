@@ -3,11 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:controls="clr-namespace:HermesDesktop.Controls">
     <Grid Margin="24">
-        <TextBlock Text="Loading usage data..." FontSize="14" Foreground="#888"
+        <TextBlock Text="Loading usage data..." FontSize="14" Foreground="{DynamicResource TextTertiary}"
                    VerticalAlignment="Center" HorizontalAlignment="Center"
                    Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}"/>
 
-        <TextBlock Text="{Binding ErrorMessage}" FontSize="14" Foreground="#C00"
+        <TextBlock Text="{Binding ErrorMessage}" FontSize="14" Foreground="{DynamicResource ErrorText}"
                    TextWrapping="Wrap" VerticalAlignment="Center" HorizontalAlignment="Center"
                    Visibility="{Binding ErrorMessage, Converter={StaticResource NullToVisibility}}"/>
 
@@ -17,48 +17,60 @@
                 <DockPanel Margin="0,0,0,20">
                     <Button DockPanel.Dock="Right" Content="Refresh" Command="{Binding LoadUsageCommand}"
                             Padding="12,4"/>
-                    <TextBlock Text="Usage" FontSize="22" FontWeight="SemiBold"/>
+                    <TextBlock Text="Usage" FontSize="22" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimary}"/>
                 </DockPanel>
 
                 <!-- Totals -->
                 <UniformGrid Columns="3" Margin="0,0,0,24">
-                    <Border Padding="16" Background="#F8F8F8" CornerRadius="6" Margin="0,0,8,0">
+                    <Border Padding="16" Background="{DynamicResource CardBackground}" CornerRadius="8" Margin="0,0,8,0"
+                            BorderBrush="{DynamicResource PanelBorder}" BorderThickness="1">
                         <StackPanel>
-                            <TextBlock Text="Sessions" FontSize="12" Foreground="#888"/>
-                            <TextBlock Text="{Binding SessionCount, StringFormat='{}{0:N0}'}" FontSize="28" FontWeight="Bold"/>
+                            <TextBlock Text="Sessions" FontSize="12" Foreground="{DynamicResource TextTertiary}"/>
+                            <TextBlock Text="{Binding SessionCount, StringFormat='{}{0:N0}'}" FontSize="28" FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimary}"/>
                         </StackPanel>
                     </Border>
-                    <Border Padding="16" Background="#F8F8F8" CornerRadius="6" Margin="4,0">
+                    <Border Padding="16" Background="{DynamicResource CardBackground}" CornerRadius="8" Margin="4,0"
+                            BorderBrush="{DynamicResource PanelBorder}" BorderThickness="1">
                         <StackPanel>
-                            <TextBlock Text="Input Tokens" FontSize="12" Foreground="#888"/>
-                            <TextBlock Text="{Binding InputTokens, StringFormat='{}{0:N0}'}" FontSize="28" FontWeight="Bold"/>
+                            <TextBlock Text="Input Tokens" FontSize="12" Foreground="{DynamicResource TextTertiary}"/>
+                            <TextBlock Text="{Binding InputTokens, StringFormat='{}{0:N0}'}" FontSize="28" FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimary}"/>
                         </StackPanel>
                     </Border>
-                    <Border Padding="16" Background="#F8F8F8" CornerRadius="6" Margin="8,0,0,0">
+                    <Border Padding="16" Background="{DynamicResource CardBackground}" CornerRadius="8" Margin="8,0,0,0"
+                            BorderBrush="{DynamicResource PanelBorder}" BorderThickness="1">
                         <StackPanel>
-                            <TextBlock Text="Output Tokens" FontSize="12" Foreground="#888"/>
-                            <TextBlock Text="{Binding OutputTokens, StringFormat='{}{0:N0}'}" FontSize="28" FontWeight="Bold"/>
+                            <TextBlock Text="Output Tokens" FontSize="12" Foreground="{DynamicResource TextTertiary}"/>
+                            <TextBlock Text="{Binding OutputTokens, StringFormat='{}{0:N0}'}" FontSize="28" FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimary}"/>
                         </StackPanel>
                     </Border>
                 </UniformGrid>
 
                 <!-- Highlights -->
                 <UniformGrid Columns="3" Margin="0,0,0,24">
-                    <Border Padding="12" Background="#F0F4FF" CornerRadius="6" Margin="0,0,8,0">
+                    <Border Padding="12" Background="{DynamicResource HighlightCardBackground}" CornerRadius="8" Margin="0,0,8,0"
+                            BorderBrush="{DynamicResource PanelBorder}" BorderThickness="1">
                         <StackPanel>
-                            <TextBlock Text="Total Tokens" FontSize="12" Foreground="#888"/>
-                            <TextBlock Text="{Binding TotalTokens, StringFormat='{}{0:N0}'}" FontSize="20" FontWeight="SemiBold"/>
+                            <TextBlock Text="Total Tokens" FontSize="12" Foreground="{DynamicResource TextTertiary}"/>
+                            <TextBlock Text="{Binding TotalTokens, StringFormat='{}{0:N0}'}" FontSize="20" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimary}"/>
                         </StackPanel>
                     </Border>
-                    <Border Padding="12" Background="#F0F4FF" CornerRadius="6" Margin="4,0">
+                    <Border Padding="12" Background="{DynamicResource HighlightCardBackground}" CornerRadius="8" Margin="4,0"
+                            BorderBrush="{DynamicResource PanelBorder}" BorderThickness="1">
                         <StackPanel>
-                            <TextBlock Text="Avg per Session" FontSize="12" Foreground="#888"/>
-                            <TextBlock Text="{Binding AveragePerSession}" FontSize="20" FontWeight="SemiBold"/>
+                            <TextBlock Text="Avg per Session" FontSize="12" Foreground="{DynamicResource TextTertiary}"/>
+                            <TextBlock Text="{Binding AveragePerSession}" FontSize="20" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimary}"/>
                         </StackPanel>
                     </Border>
-                    <Border Padding="12" Background="#F0F4FF" CornerRadius="6" Margin="8,0,0,0">
+                    <Border Padding="12" Background="{DynamicResource HighlightCardBackground}" CornerRadius="8" Margin="8,0,0,0"
+                            BorderBrush="{DynamicResource PanelBorder}" BorderThickness="1">
                         <StackPanel>
-                            <TextBlock Text="Input / Output Ratio" FontSize="12" Foreground="#888"/>
+                            <TextBlock Text="Input / Output Ratio" FontSize="12" Foreground="{DynamicResource TextTertiary}"/>
                             <Grid Height="8" Margin="0,8,0,0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -76,21 +88,25 @@
                 </UniformGrid>
 
                 <!-- Top models -->
-                <TextBlock Text="Top Models" FontSize="16" FontWeight="Medium" Margin="0,0,0,8"/>
+                <TextBlock Text="Top Models" FontSize="16" FontWeight="Medium" Margin="0,0,0,8"
+                           Foreground="{DynamicResource TextPrimary}"/>
                 <ItemsControl ItemsSource="{Binding TopModels}" Margin="0,0,0,24">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Display}" FontSize="13" Margin="0,4" Foreground="#444"/>
+                            <TextBlock Text="{Binding Display}" FontSize="13" Margin="0,4"
+                                       Foreground="{DynamicResource TextSecondary}"/>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
                 <!-- Top sessions -->
-                <TextBlock Text="Top Sessions by Token Usage" FontSize="16" FontWeight="Medium" Margin="0,0,0,8"/>
+                <TextBlock Text="Top Sessions by Token Usage" FontSize="16" FontWeight="Medium" Margin="0,0,0,8"
+                           Foreground="{DynamicResource TextPrimary}"/>
                 <ItemsControl ItemsSource="{Binding TopSessions}" Margin="0,0,0,24">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Display}" FontSize="13" Margin="0,4" Foreground="#444"/>
+                            <TextBlock Text="{Binding Display}" FontSize="13" Margin="0,4"
+                                       Foreground="{DynamicResource TextSecondary}"/>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

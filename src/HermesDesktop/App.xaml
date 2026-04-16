@@ -5,31 +5,39 @@
              xmlns:vm="clr-namespace:HermesDesktop.ViewModels"
              xmlns:views="clr-namespace:HermesDesktop.Views">
     <Application.Resources>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
-        <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibility"/>
-        <converters:NullToVisibilityConverter x:Key="NullToVisibility"/>
-        <converters:RelativeDateConverter x:Key="RelativeDate"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/ControlStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
 
-        <DataTemplate DataType="{x:Type vm:ConnectionManagerViewModel}">
-            <views:ConnectionManagerView/>
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:OverviewViewModel}">
-            <views:OverviewView/>
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:FileEditorViewModel}">
-            <views:FileEditorView/>
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:SessionBrowserViewModel}">
-            <views:SessionBrowserView/>
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:UsageBrowserViewModel}">
-            <views:UsageBrowserView/>
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:SkillBrowserViewModel}">
-            <views:SkillBrowserView/>
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:TerminalViewModel}">
-            <views:TerminalView/>
-        </DataTemplate>
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
+            <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibility"/>
+            <converters:NullToVisibilityConverter x:Key="NullToVisibility"/>
+            <converters:RelativeDateConverter x:Key="RelativeDate"/>
+            <converters:RoleToBrushConverter x:Key="RoleToBrush"/>
+            <converters:TabActiveToBrushConverter x:Key="TabActiveToBrush"/>
+
+            <DataTemplate DataType="{x:Type vm:ConnectionManagerViewModel}">
+                <views:ConnectionManagerView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:OverviewViewModel}">
+                <views:OverviewView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:FileEditorViewModel}">
+                <views:FileEditorView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:SessionBrowserViewModel}">
+                <views:SessionBrowserView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:UsageBrowserViewModel}">
+                <views:UsageBrowserView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:SkillBrowserViewModel}">
+                <views:SkillBrowserView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:TerminalViewModel}">
+                <views:TerminalView/>
+            </DataTemplate>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -11,7 +11,8 @@
 
         <!-- Header -->
         <DockPanel Grid.Row="0" Margin="0,0,0,12">
-            <TextBlock Text="Files" FontSize="22" FontWeight="SemiBold" DockPanel.Dock="Left"/>
+            <TextBlock Text="Files" FontSize="22" FontWeight="SemiBold" DockPanel.Dock="Left"
+                       Foreground="{DynamicResource TextPrimary}"/>
         </DockPanel>
 
         <!-- File selector + actions -->
@@ -19,9 +20,9 @@
             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
                 <Button Content="Reload" Command="{Binding LoadFileCommand}" Padding="12,4" Margin="0,0,8,0"/>
                 <Button Content="Save" Command="{Binding SaveFileCommand}" Padding="12,4" Margin="0,0,8,0"
-                        IsEnabled="{Binding IsDirty}"/>
+                        Style="{StaticResource AccentButton}" IsEnabled="{Binding IsDirty}"/>
                 <Button Content="Discard" Command="{Binding DiscardChangesCommand}" Padding="12,4"
-                        IsEnabled="{Binding IsDirty}"/>
+                        Style="{StaticResource DangerButton}" IsEnabled="{Binding IsDirty}"/>
             </StackPanel>
             <ComboBox ItemsSource="{Binding AvailableFiles}"
                       SelectedItem="{Binding SelectedFileName}"
@@ -30,9 +31,10 @@
 
         <!-- Conflict warning -->
         <Border Grid.Row="2" Visibility="{Binding ConflictMessage, Converter={StaticResource NullToVisibility}}"
-                Background="#FFF3CD" BorderBrush="#FFEEBA" BorderThickness="1" Padding="12,8" Margin="0,0,0,8"
-                CornerRadius="4" VerticalAlignment="Top" Panel.ZIndex="1">
-            <TextBlock Text="{Binding ConflictMessage}" Foreground="#856404" TextWrapping="Wrap"/>
+                Background="{DynamicResource WarningBackground}" BorderBrush="{DynamicResource WarningBorder}"
+                BorderThickness="1" Padding="12,8" Margin="0,0,0,8"
+                CornerRadius="6" VerticalAlignment="Top" Panel.ZIndex="1">
+            <TextBlock Text="{Binding ConflictMessage}" Foreground="{DynamicResource WarningText}" TextWrapping="Wrap"/>
         </Border>
 
         <!-- Editor -->
@@ -40,19 +42,19 @@
                  AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap"
                  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
                  FontFamily="Consolas" FontSize="13" Padding="12"
-                 BorderThickness="1" BorderBrush="#DDD"
                  Visibility="{Binding IsLoading, Converter={StaticResource InverseBoolToVisibility}}"/>
 
         <!-- Loading -->
-        <TextBlock Grid.Row="2" Text="Loading..." FontSize="14" Foreground="#888"
+        <TextBlock Grid.Row="2" Text="Loading..." FontSize="14" Foreground="{DynamicResource TextTertiary}"
                    VerticalAlignment="Center" HorizontalAlignment="Center"
                    Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}"/>
 
         <!-- Status bar -->
         <DockPanel Grid.Row="3" Margin="0,8,0,0">
-            <TextBlock Text="{Binding ErrorMessage}" Foreground="#C00" FontSize="12"
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource ErrorText}" FontSize="12"
                        Visibility="{Binding ErrorMessage, Converter={StaticResource NullToVisibility}}"/>
-            <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right" FontSize="11" Foreground="#888">
+            <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right" FontSize="11"
+                       Foreground="{DynamicResource TextTertiary}">
                 <TextBlock.Style>
                     <Style TargetType="TextBlock">
                         <Setter Property="Text" Value=""/>
