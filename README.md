@@ -1,8 +1,14 @@
 # Hermes Desktop for Windows
 
-A native Windows desktop application for [Hermes Agent](https://github.com/dodo-reach/hermes-desktop). Connects directly over SSH to remote Hermes hosts, keeping the remote system as the single source of truth.
+A native Windows desktop client for [Hermes Agent](https://github.com/dodo-reach/hermes-desktop) hosts. Connects directly over SSH &mdash; no browser wrapper, no gateway API, no helper service installed on the remote host.
 
-This is a WPF port of the [macOS SwiftUI app](https://github.com/dodo-reach/hermes-desktop), built with .NET 8 and SSH.NET.
+> **Windows port of [hermes-desktop](https://github.com/dodo-reach/hermes-desktop)** &mdash; the original native macOS (SwiftUI) workspace by [dodo-reach](https://github.com/dodo-reach). Same philosophy: real SSH, real terminal, remote host as the single source of truth. This port is built from scratch with .NET 8 WPF and SSH.NET to bring the same experience to Windows.
+
+---
+
+## Download
+
+Grab the latest `HermesDesktop.exe` from [**Releases**](https://github.com/acegraphx/hermes-desktop-win/releases). It's a self-contained single file (~72 MB) &mdash; no installer, no .NET runtime needed. Just run it.
 
 ---
 
@@ -225,6 +231,12 @@ The app reads the Windows registry key `HKCU\Software\Microsoft\Windows\CurrentV
 | Distribution | `.app` bundle | Single-file `.exe` |
 
 The remote Python scripts are functionally equivalent &mdash; same `payload`/`ok` JSON protocol, same SQLite queries, same file operations.
+
+---
+
+## Acknowledgments
+
+This project is a Windows port of [**hermes-desktop**](https://github.com/dodo-reach/hermes-desktop) by [dodo-reach](https://github.com/dodo-reach) &mdash; a native macOS SwiftUI workspace for Hermes Agent. The original app introduced the SSH-only, zero-install approach to managing Hermes hosts from a native desktop app. The remote Python scripts, JSON protocol, and overall feature set in this Windows port are functionally equivalent to the macOS original.
 
 ---
 
