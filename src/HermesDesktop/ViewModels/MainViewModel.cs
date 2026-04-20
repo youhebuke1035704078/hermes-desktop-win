@@ -30,7 +30,7 @@ public partial class MainViewModel : ObservableObject
     private string? _statusMessage;
 
     [ObservableProperty]
-    private string _windowTitle = "Hermes Desktop";
+    private string _windowTitle = "Hermes 桌面";
 
     [ObservableProperty]
     private SshConnectionState _connectionState = SshConnectionState.Disconnected;
@@ -42,13 +42,13 @@ public partial class MainViewModel : ObservableObject
 
     public List<NavigationItem> NavigationItems { get; } = new()
     {
-        new() { Section = NavigationSection.Connections, Label = "Connections", IconGlyph = "\uE774" },
-        new() { Section = NavigationSection.Overview, Label = "Overview", IconGlyph = "\uE80F", RequiresConnection = true },
-        new() { Section = NavigationSection.Files, Label = "Files", IconGlyph = "\uE8A5", RequiresConnection = true },
-        new() { Section = NavigationSection.Sessions, Label = "Sessions", IconGlyph = "\uE8BD", RequiresConnection = true },
-        new() { Section = NavigationSection.Usage, Label = "Usage", IconGlyph = "\uE9D2", RequiresConnection = true },
-        new() { Section = NavigationSection.Skills, Label = "Skills", IconGlyph = "\uE82D", RequiresConnection = true },
-        new() { Section = NavigationSection.Terminal, Label = "Terminal", IconGlyph = "\uE756", RequiresConnection = true },
+        new() { Section = NavigationSection.Connections, Label = "连接", IconGlyph = "\uE774" },
+        new() { Section = NavigationSection.Overview, Label = "概览", IconGlyph = "\uE80F", RequiresConnection = true },
+        new() { Section = NavigationSection.Files, Label = "文件", IconGlyph = "\uE8A5", RequiresConnection = true },
+        new() { Section = NavigationSection.Sessions, Label = "会话", IconGlyph = "\uE8BD", RequiresConnection = true },
+        new() { Section = NavigationSection.Usage, Label = "用量", IconGlyph = "\uE9D2", RequiresConnection = true },
+        new() { Section = NavigationSection.Skills, Label = "技能", IconGlyph = "\uE82D", RequiresConnection = true },
+        new() { Section = NavigationSection.Terminal, Label = "终端", IconGlyph = "\uE756", RequiresConnection = true },
     };
 
     /// <summary>Check if the file editor has unsaved changes.</summary>
@@ -152,11 +152,15 @@ public partial class MainViewModel : ObservableObject
 
     private void UpdateWindowTitle()
     {
-        var section = SelectedSection.ToString();
+        // Look up the localised nav label so the window title follows the UI locale
+        // rather than the English enum name (e.g. "概览" instead of "Overview").
+        var section = NavigationItems
+            .FirstOrDefault(n => n.Section == SelectedSection)?.Label
+            ?? SelectedSection.ToString();
         if (ActiveConnection != null)
-            WindowTitle = $"{section} - {ActiveConnection.Label} - Hermes Desktop";
+            WindowTitle = $"{section} - {ActiveConnection.Label} - Hermes 桌面";
         else
-            WindowTitle = $"{section} - Hermes Desktop";
+            WindowTitle = $"{section} - Hermes 桌面";
     }
 
     public void RefreshConnections()
@@ -192,10 +196,10 @@ public partial class MainViewModel : ObservableObject
             ConnectionState = e.State;
             StatusMessage = e.State switch
             {
-                SshConnectionState.Connecting => "Connecting...",
-                SshConnectionState.Connected => "Connected",
-                SshConnectionState.Error => $"Error: {e.ErrorMessage}",
-                SshConnectionState.Disconnected => "Disconnected",
+                SshConnectionState.Connecting => "正在连接...",
+                SshConnectionState.Connected => "已连接",
+                SshConnectionState.Error => $"错误：{e.ErrorMessage}",
+                SshConnectionState.Disconnected => "已断开",
                 _ => null
             };
         });

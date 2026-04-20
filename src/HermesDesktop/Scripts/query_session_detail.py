@@ -35,7 +35,7 @@ def stringify(v):
 try:
     session_id = payload.get("session_id")
     if not session_id:
-        fail("The session ID is required.")
+        fail("缺少必需的会话 ID。")
 
     hermes_home = pathlib.Path.home() / ".hermes"
     conn = None
@@ -70,7 +70,7 @@ try:
                     break
 
         if artifact is None:
-            fail(f"No session found for '{session_id}'.")
+            fail(f"未找到 ID 为 {session_id} 的会话。")
 
         items = []
         with artifact.open("r", encoding="utf-8") as handle:
@@ -105,7 +105,7 @@ try:
         mts_col = choose_column(mcols, ["timestamp", "created_at", "time"])
 
         if not msid_col:
-            fail("Unsupported message schema.")
+            fail("不支持的消息格式。")
 
         q = f"SELECT * FROM {quote_ident(message_table)} WHERE {quote_ident(msid_col)} = ? ORDER BY "
         if mts_col:
@@ -129,4 +129,4 @@ try:
         conn.close()
         print(json.dumps({"ok": True, "items": items}, ensure_ascii=False))
 except Exception as exc:
-    fail(f"Unable to read the remote Hermes transcript: {exc}")
+    fail(f"读取远程 Hermes 对话记录失败：{exc}")

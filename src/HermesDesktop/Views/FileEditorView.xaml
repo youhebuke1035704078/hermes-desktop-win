@@ -11,17 +11,17 @@
 
         <!-- Header -->
         <DockPanel Grid.Row="0" Margin="0,0,0,12">
-            <TextBlock Text="Files" FontSize="22" FontWeight="SemiBold" DockPanel.Dock="Left"
+            <TextBlock Text="文件" FontSize="22" FontWeight="SemiBold" DockPanel.Dock="Left"
                        Foreground="{DynamicResource TextPrimary}"/>
         </DockPanel>
 
         <!-- File selector + actions -->
         <DockPanel Grid.Row="1" Margin="0,0,0,8">
             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                <Button Content="Reload" Command="{Binding LoadFileCommand}" Padding="12,4" Margin="0,0,8,0"/>
-                <Button Content="Save" Command="{Binding SaveFileCommand}" Padding="12,4" Margin="0,0,8,0"
+                <Button Content="重新加载" Command="{Binding LoadFileCommand}" Padding="12,4" Margin="0,0,8,0"/>
+                <Button Content="保存" Command="{Binding SaveFileCommand}" Padding="12,4" Margin="0,0,8,0"
                         Style="{StaticResource AccentButton}" IsEnabled="{Binding IsDirty}"/>
-                <Button Content="Discard" Command="{Binding DiscardChangesCommand}" Padding="12,4"
+                <Button Content="放弃修改" Command="{Binding DiscardChangesCommand}" Padding="12,4"
                         Style="{StaticResource DangerButton}" IsEnabled="{Binding IsDirty}"/>
             </StackPanel>
             <ComboBox ItemsSource="{Binding AvailableFiles}"
@@ -45,7 +45,7 @@
                  Visibility="{Binding IsLoading, Converter={StaticResource InverseBoolToVisibility}}"/>
 
         <!-- Loading -->
-        <TextBlock Grid.Row="2" Text="Loading..." FontSize="14" Foreground="{DynamicResource TextTertiary}"
+        <TextBlock Grid.Row="2" Text="正在加载..." FontSize="14" Foreground="{DynamicResource TextTertiary}"
                    VerticalAlignment="Center" HorizontalAlignment="Center"
                    Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}"/>
 
@@ -60,10 +60,10 @@
                         <Setter Property="Text" Value=""/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsDirty}" Value="True">
-                                <Setter Property="Text" Value="Modified"/>
+                                <Setter Property="Text" Value="已修改"/>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding IsSaving}" Value="True">
-                                <Setter Property="Text" Value="Saving..."/>
+                                <Setter Property="Text" Value="保存中..."/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>

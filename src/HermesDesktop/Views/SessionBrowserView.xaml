@@ -10,7 +10,7 @@
 
         <!-- Left: session list -->
         <DockPanel Grid.Column="0">
-            <TextBlock DockPanel.Dock="Top" Text="Sessions" FontSize="22" FontWeight="SemiBold" Margin="0,0,0,12"
+            <TextBlock DockPanel.Dock="Top" Text="会话" FontSize="22" FontWeight="SemiBold" Margin="0,0,0,12"
                        Foreground="{DynamicResource TextPrimary}"/>
 
             <TextBox DockPanel.Dock="Top" Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged, Delay=300}"
@@ -19,7 +19,7 @@
                     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                         <Style.Triggers>
                             <Trigger Property="Text" Value="">
-                                <Setter Property="Tag" Value="Search sessions..."/>
+                                <Setter Property="Tag" Value="搜索会话..."/>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
@@ -27,11 +27,12 @@
             </TextBox>
 
             <TextBlock DockPanel.Dock="Top" FontSize="12" Foreground="{DynamicResource TextTertiary}" Margin="0,0,0,8">
+                <Run Text="共 "/>
                 <Run Text="{Binding TotalCount, Mode=OneWay}"/>
-                <Run Text=" sessions"/>
+                <Run Text=" 个会话"/>
             </TextBlock>
 
-            <TextBlock DockPanel.Dock="Top" Text="Loading..." Foreground="{DynamicResource TextTertiary}"
+            <TextBlock DockPanel.Dock="Top" Text="正在加载..." Foreground="{DynamicResource TextTertiary}"
                        Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}"/>
 
             <ListView ItemsSource="{Binding Sessions}" SelectedItem="{Binding SelectedSession}">
@@ -44,7 +45,7 @@
                                 <TextBlock Text="{Binding Model}" FontSize="11" Foreground="{DynamicResource TextTertiary}" DockPanel.Dock="Left"/>
                                 <TextBlock FontSize="11" Foreground="{DynamicResource TextTertiary}" HorizontalAlignment="Right">
                                     <Run Text="{Binding MessageCount, Mode=OneWay}"/>
-                                    <Run Text=" msgs"/>
+                                    <Run Text=" 条消息"/>
                                 </TextBlock>
                             </DockPanel>
                             <TextBlock Text="{Binding LastActive, Converter={StaticResource RelativeDate}}"
@@ -63,7 +64,7 @@
         <!-- Right: session detail -->
         <DockPanel Grid.Column="2">
             <!-- No selection -->
-            <TextBlock Text="Select a session to view its transcript"
+            <TextBlock Text="选中一个会话查看对话记录"
                        FontSize="14" Foreground="{DynamicResource TextTertiary}" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <TextBlock.Style>
                     <Style TargetType="TextBlock">
@@ -80,14 +81,14 @@
             <!-- Detail header -->
             <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8"
                        Visibility="{Binding SelectedSession, Converter={StaticResource NullToVisibility}}">
-                <Button DockPanel.Dock="Right" Content="Delete" Padding="12,4"
+                <Button DockPanel.Dock="Right" Content="删除" Padding="12,4"
                         Style="{StaticResource DangerButton}"
                         Command="{Binding RequestDeleteSessionCommand}" CommandParameter="{Binding SelectedSession}"/>
                 <TextBlock Text="{Binding SelectedSession.DisplayTitle}" FontSize="18" FontWeight="Medium"
                            TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TextPrimary}"/>
             </DockPanel>
 
-            <TextBlock DockPanel.Dock="Top" Text="Loading transcript..." Foreground="{DynamicResource TextTertiary}"
+            <TextBlock DockPanel.Dock="Top" Text="正在加载对话..." Foreground="{DynamicResource TextTertiary}"
                        Visibility="{Binding IsLoadingDetail, Converter={StaticResource BoolToVisibility}}"/>
 
             <!-- Transcript messages -->
@@ -121,14 +122,14 @@
                     VerticalAlignment="Center" HorizontalAlignment="Center"
                     BorderBrush="{DynamicResource PanelBorder}" BorderThickness="1">
                 <StackPanel>
-                    <TextBlock Text="Delete this session?" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8"
+                    <TextBlock Text="删除此会话？" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8"
                                Foreground="{DynamicResource TextPrimary}"/>
-                    <TextBlock Text="This will permanently remove the session and all its messages from the remote host."
+                    <TextBlock Text="这将从远程主机永久删除该会话及其所有消息。"
                                FontSize="13" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" Margin="0,0,0,20"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Content="Cancel" Command="{Binding CancelDeleteSessionCommand}"
+                        <Button Content="取消" Command="{Binding CancelDeleteSessionCommand}"
                                 Padding="16,6" Margin="0,0,8,0"/>
-                        <Button Content="Delete" Command="{Binding ConfirmDeleteSessionCommand}"
+                        <Button Content="删除" Command="{Binding ConfirmDeleteSessionCommand}"
                                 Padding="16,6" Style="{StaticResource DangerButton}"/>
                     </StackPanel>
                 </StackPanel>

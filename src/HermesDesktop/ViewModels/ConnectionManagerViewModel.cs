@@ -126,7 +126,7 @@ public partial class ConnectionManagerViewModel : ObservableObject
         SshConfigEntries = new ObservableCollection<SshConfigEntry>(entries);
         ShowSshConfigImport = entries.Count > 0;
         if (entries.Count == 0)
-            TestResult = "No SSH config entries found in ~/.ssh/config";
+            TestResult = "~/.ssh/config 中没有找到任何主机条目";
     }
 
     [RelayCommand]
@@ -190,7 +190,7 @@ public partial class ConnectionManagerViewModel : ObservableObject
 
         if (!profile.IsValid)
         {
-            TestResult = "Please fill in all required fields.";
+            TestResult = "请填写所有必填字段。";
             return;
         }
 
@@ -200,12 +200,12 @@ public partial class ConnectionManagerViewModel : ObservableObject
         {
             var result = await _hermesService.TestConnectionAsync(profile);
             TestResult = result.ExitCode == 0
-                ? $"Success! {result.StandardOutput.Trim()}"
-                : $"Failed (exit {result.ExitCode}): {result.StandardError.Trim()}";
+                ? $"成功！{result.StandardOutput.Trim()}"
+                : $"失败（退出码 {result.ExitCode}）：{result.StandardError.Trim()}";
         }
         catch (Exception ex)
         {
-            TestResult = $"Connection failed: {ex.Message}";
+            TestResult = $"连接失败：{ex.Message}";
         }
         finally
         {

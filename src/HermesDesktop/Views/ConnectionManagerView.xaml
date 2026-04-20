@@ -9,17 +9,17 @@
                     VerticalAlignment="Center" HorizontalAlignment="Center"
                     BorderBrush="{DynamicResource PanelBorder}" BorderThickness="1">
                 <StackPanel>
-                    <TextBlock Text="Delete this connection?" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8"
+                    <TextBlock Text="删除此连接？" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8"
                                Foreground="{DynamicResource TextPrimary}"/>
                     <TextBlock FontSize="13" Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap" Margin="0,0,0,20">
-                        <Run Text="Are you sure you want to delete "/>
+                        <Run Text="确定要删除 "/>
                         <Run Text="{Binding PendingDeleteConnection.Label, Mode=OneWay}" FontWeight="SemiBold"/>
-                        <Run Text="? This cannot be undone."/>
+                        <Run Text=" 吗？此操作不可恢复。"/>
                     </TextBlock>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Content="Cancel" Command="{Binding CancelDeleteConnectionCommand}"
+                        <Button Content="取消" Command="{Binding CancelDeleteConnectionCommand}"
                                 Padding="16,6" Margin="0,0,8,0"/>
-                        <Button Content="Delete" Command="{Binding ConfirmDeleteConnectionCommand}"
+                        <Button Content="删除" Command="{Binding ConfirmDeleteConnectionCommand}"
                                 Padding="16,6" Style="{StaticResource DangerButton}"/>
                     </StackPanel>
                 </StackPanel>
@@ -33,17 +33,17 @@
                     VerticalAlignment="Center" HorizontalAlignment="Center"
                     BorderBrush="{DynamicResource PanelBorder}" BorderThickness="1">
                 <DockPanel>
-                    <TextBlock DockPanel.Dock="Top" Text="Import from SSH Config" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,4"
+                    <TextBlock DockPanel.Dock="Top" Text="从 SSH 配置文件导入" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,4"
                                Foreground="{DynamicResource TextPrimary}"/>
-                    <TextBlock DockPanel.Dock="Top" Text="Select a host to import as a connection profile." FontSize="12"
+                    <TextBlock DockPanel.Dock="Top" Text="选择一个主机作为连接配置导入。" FontSize="12"
                                Foreground="{DynamicResource TextTertiary}" Margin="0,0,0,12"/>
-                    <Button DockPanel.Dock="Bottom" Content="Cancel" Command="{Binding CloseSshConfigImportCommand}"
+                    <Button DockPanel.Dock="Bottom" Content="取消" Command="{Binding CloseSshConfigImportCommand}"
                             Padding="16,6" HorizontalAlignment="Right" Margin="0,12,0,0"/>
                     <ListView ItemsSource="{Binding SshConfigEntries}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <DockPanel Margin="4,4">
-                                    <Button DockPanel.Dock="Right" Content="Import" Padding="10,3" FontSize="12"
+                                    <Button DockPanel.Dock="Right" Content="导入" Padding="10,3" FontSize="12"
                                             Style="{StaticResource AccentButton}"
                                             Command="{Binding DataContext.ImportSshConfigEntryCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
                                             CommandParameter="{Binding}"/>
@@ -73,11 +73,11 @@
 
         <!-- Header -->
         <DockPanel Grid.Row="0" Margin="0,0,0,16">
-            <TextBlock Text="Connections" FontSize="22" FontWeight="SemiBold" DockPanel.Dock="Left"
+            <TextBlock Text="连接" FontSize="22" FontWeight="SemiBold" DockPanel.Dock="Left"
                        Foreground="{DynamicResource TextPrimary}"/>
-            <Button Content="Import SSH Config" Command="{Binding OpenSshConfigImportCommand}"
+            <Button Content="导入 SSH 配置" Command="{Binding OpenSshConfigImportCommand}"
                     HorizontalAlignment="Right" Padding="12,6" FontSize="12" Margin="0,0,8,0"/>
-            <Button Content="New Connection" Command="{Binding NewConnectionCommand}"
+            <Button Content="新建连接" Command="{Binding NewConnectionCommand}"
                     HorizontalAlignment="Right" Padding="16,6" FontSize="13"
                     Style="{StaticResource AccentButton}"/>
         </DockPanel>
@@ -89,12 +89,12 @@
                 <DataTemplate>
                     <DockPanel Margin="8,6">
                         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
-                            <Button Content="Connect" Command="{Binding DataContext.ConnectToCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
+                            <Button Content="连接" Command="{Binding DataContext.ConnectToCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
                                     CommandParameter="{Binding}" Margin="0,0,8,0" Padding="12,4" FontSize="12"
                                     Style="{StaticResource AccentButton}"/>
-                            <Button Content="Edit" Command="{Binding DataContext.EditConnectionCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
+                            <Button Content="编辑" Command="{Binding DataContext.EditConnectionCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
                                     CommandParameter="{Binding}" Margin="0,0,8,0" Padding="12,4" FontSize="12"/>
-                            <Button Content="Delete" Command="{Binding DataContext.RequestDeleteConnectionCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
+                            <Button Content="删除" Command="{Binding DataContext.RequestDeleteConnectionCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
                                     CommandParameter="{Binding}" Padding="12,4" FontSize="12"
                                     Style="{StaticResource DangerButton}"/>
                         </StackPanel>
@@ -114,22 +114,22 @@
                 BorderThickness="1" BorderBrush="{DynamicResource PanelBorder}" Padding="24"
                 Background="{DynamicResource PanelBackground}" CornerRadius="8">
             <StackPanel MaxWidth="500">
-                <TextBlock Text="Connection Details" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"
+                <TextBlock Text="连接详情" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,16"
                            Foreground="{DynamicResource TextPrimary}"/>
 
-                <TextBlock Text="Label" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
+                <TextBlock Text="名称" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
                 <TextBox Text="{Binding EditLabel, UpdateSourceTrigger=PropertyChanged}" Padding="8,6" FontSize="13" Margin="0,0,0,12"/>
 
-                <TextBlock Text="Host / IP" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
+                <TextBlock Text="主机 / IP" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
                 <TextBox Text="{Binding EditHost, UpdateSourceTrigger=PropertyChanged}" Padding="8,6" FontSize="13" Margin="0,0,0,12"/>
 
-                <TextBlock Text="Username" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
+                <TextBlock Text="用户名" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
                 <TextBox Text="{Binding EditUser, UpdateSourceTrigger=PropertyChanged}" Padding="8,6" FontSize="13" Margin="0,0,0,12"/>
 
-                <TextBlock Text="Port" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
+                <TextBlock Text="端口" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
                 <TextBox Text="{Binding EditPort, UpdateSourceTrigger=PropertyChanged}" Padding="8,6" FontSize="13" Margin="0,0,0,12" Width="100" HorizontalAlignment="Left"/>
 
-                <TextBlock Text="SSH Key Path (optional)" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
+                <TextBlock Text="SSH 密钥路径（可选）" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
                 <TextBox Text="{Binding EditKeyPath, UpdateSourceTrigger=PropertyChanged}" Padding="8,6" FontSize="13" Margin="0,0,0,16"/>
 
                 <!-- Test result -->
@@ -138,10 +138,10 @@
                            TextWrapping="Wrap"/>
 
                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                    <Button Content="Save" Command="{Binding SaveConnectionCommand}" Padding="16,6" FontSize="13" Margin="0,0,8,0"
+                    <Button Content="保存" Command="{Binding SaveConnectionCommand}" Padding="16,6" FontSize="13" Margin="0,0,8,0"
                             Style="{StaticResource AccentButton}"/>
-                    <Button Content="Test" Command="{Binding TestConnectionCommand}" Padding="16,6" FontSize="13" Margin="0,0,8,0"/>
-                    <Button Content="Cancel" Command="{Binding CancelEditCommand}" Padding="16,6" FontSize="13"/>
+                    <Button Content="测试" Command="{Binding TestConnectionCommand}" Padding="16,6" FontSize="13" Margin="0,0,8,0"/>
+                    <Button Content="取消" Command="{Binding CancelEditCommand}" Padding="16,6" FontSize="13"/>
                 </StackPanel>
             </StackPanel>
         </Border>

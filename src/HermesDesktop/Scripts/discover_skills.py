@@ -115,4 +115,4 @@ try:
 
     print(json.dumps({"ok": True, "items": items}, ensure_ascii=False))
 except Exception as exc:
-    fail(f"Unable to read the remote Hermes skill library: {exc}")
+    fail(f"读取远程 Hermes 技能库失败：{exc}")

@@ -38,7 +38,7 @@ public partial class OverviewViewModel : ObservableObject
     {
         if (_mainVm.ActiveConnection == null)
         {
-            ErrorMessage = "No active connection. Select a connection first.";
+            ErrorMessage = "当前没有活动连接，请先选择一个连接。";
             return;
         }
 

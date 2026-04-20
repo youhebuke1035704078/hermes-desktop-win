@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid Margin="24">
         <!-- Loading -->
-        <TextBlock Text="Loading overview..." FontSize="14" Foreground="{DynamicResource TextTertiary}"
+        <TextBlock Text="正在加载概览..." FontSize="14" Foreground="{DynamicResource TextTertiary}"
                    Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}"
                    VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
@@ -16,37 +16,37 @@
         <ScrollViewer Visibility="{Binding Overview, Converter={StaticResource NullToVisibility}}"
                       VerticalScrollBarVisibility="Auto">
             <StackPanel MaxWidth="600">
-                <TextBlock Text="Overview" FontSize="22" FontWeight="SemiBold"
+                <TextBlock Text="概览" FontSize="22" FontWeight="SemiBold"
                            Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,20"/>
 
-                <TextBlock Text="Remote Home" FontSize="12" Foreground="{DynamicResource TextTertiary}"/>
+                <TextBlock Text="远程主目录" FontSize="12" Foreground="{DynamicResource TextTertiary}"/>
                 <TextBlock Text="{Binding Overview.Home}" FontSize="14"
                            Foreground="{DynamicResource TextPrimary}" Margin="0,2,0,12"/>
 
-                <TextBlock Text="Hermes Root" FontSize="12" Foreground="{DynamicResource TextTertiary}"/>
+                <TextBlock Text="Hermes 根目录" FontSize="12" Foreground="{DynamicResource TextTertiary}"/>
                 <TextBlock Text="{Binding Overview.HermesRoot}" FontSize="14"
                            Foreground="{DynamicResource TextPrimary}" Margin="0,2,0,12"/>
 
-                <TextBlock Text="Python Version" FontSize="12" Foreground="{DynamicResource TextTertiary}"/>
+                <TextBlock Text="Python 版本" FontSize="12" Foreground="{DynamicResource TextTertiary}"/>
                 <TextBlock Text="{Binding Overview.PythonVersion}" FontSize="14"
                            Foreground="{DynamicResource TextPrimary}" Margin="0,2,0,12"/>
 
-                <TextBlock Text="Session Source" FontSize="12" Foreground="{DynamicResource TextTertiary}"/>
+                <TextBlock Text="会话来源" FontSize="12" Foreground="{DynamicResource TextTertiary}"/>
                 <TextBlock Text="{Binding Overview.SessionSource}" FontSize="14"
                            Foreground="{DynamicResource TextPrimary}" Margin="0,2,0,12"/>
 
-                <TextBlock Text="Session Store" FontSize="12" Foreground="{DynamicResource TextTertiary}"/>
+                <TextBlock Text="会话存储" FontSize="12" Foreground="{DynamicResource TextTertiary}"/>
                 <TextBlock Text="{Binding Overview.SessionStore}" FontSize="14"
                            Foreground="{DynamicResource TextPrimary}" Margin="0,2,0,20"/>
 
-                <TextBlock Text="Tracked Files" FontSize="16" FontWeight="Medium"
+                <TextBlock Text="跟踪文件" FontSize="16" FontWeight="Medium"
                            Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,8"/>
                 <ItemsControl ItemsSource="{Binding Overview.TrackedFiles}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <DockPanel Margin="0,4">
                                 <TextBlock DockPanel.Dock="Right" FontSize="12" Foreground="{DynamicResource TextTertiary}"
-                                           Text="{Binding Size, StringFormat='{}{0:N0} bytes'}"
+                                           Text="{Binding Size, StringFormat='{}{0:N0} 字节'}"
                                            Visibility="{Binding Exists, Converter={StaticResource BoolToVisibility}}"/>
                                 <TextBlock FontSize="13" Foreground="{DynamicResource TextPrimary}">
                                     <Run Text="{Binding Path, Mode=OneWay}"/>
@@ -58,7 +58,7 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <Button Content="Refresh" Command="{Binding LoadOverviewCommand}" Margin="0,20,0,0"
+                <Button Content="刷新" Command="{Binding LoadOverviewCommand}" Margin="0,20,0,0"
                         Padding="16,6" HorizontalAlignment="Left"/>
             </StackPanel>
         </ScrollViewer>

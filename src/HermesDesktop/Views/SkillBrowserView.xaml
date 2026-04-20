@@ -11,13 +11,13 @@
 
         <!-- Left: skill list -->
         <DockPanel Grid.Column="0">
-            <TextBlock DockPanel.Dock="Top" Text="Skills" FontSize="22" FontWeight="SemiBold" Margin="0,0,0,12"
+            <TextBlock DockPanel.Dock="Top" Text="技能" FontSize="22" FontWeight="SemiBold" Margin="0,0,0,12"
                        Foreground="{DynamicResource TextPrimary}"/>
 
             <TextBox DockPanel.Dock="Top" Text="{Binding FilterQuery, UpdateSourceTrigger=PropertyChanged, Delay=200}"
                      Padding="8,6" FontSize="13" Margin="0,0,0,8"/>
 
-            <TextBlock DockPanel.Dock="Top" Text="Loading skills..." Foreground="{DynamicResource TextTertiary}"
+            <TextBlock DockPanel.Dock="Top" Text="正在加载技能..." Foreground="{DynamicResource TextTertiary}"
                        Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}"/>
 
             <ListView ItemsSource="{Binding FilteredSkills}" SelectedItem="{Binding SelectedSkill}">
@@ -49,7 +49,7 @@
         <!-- Right: skill detail -->
         <DockPanel Grid.Column="2">
             <!-- Empty state -->
-            <TextBlock Text="Select a skill to view details" FontSize="14" Foreground="{DynamicResource TextTertiary}"
+            <TextBlock Text="选中一个技能查看详情" FontSize="14" Foreground="{DynamicResource TextTertiary}"
                        VerticalAlignment="Center" HorizontalAlignment="Center"
                        DockPanel.Dock="Top">
                 <TextBlock.Style>
@@ -89,11 +89,11 @@
                         BorderBrush="{DynamicResource PanelBorder}" BorderThickness="1">
                     <StackPanel>
                         <TextBlock FontSize="12" Margin="0,0,0,4" Foreground="{DynamicResource TextSecondary}">
-                            <Run Text="Slug: " Foreground="{DynamicResource TextTertiary}"/>
+                            <Run Text="标识: " Foreground="{DynamicResource TextTertiary}"/>
                             <Run Text="{Binding SelectedSkill.Slug, Mode=OneWay}" FontFamily="Consolas"/>
                         </TextBlock>
                         <TextBlock FontSize="12" Foreground="{DynamicResource TextSecondary}">
-                            <Run Text="Path: " Foreground="{DynamicResource TextTertiary}"/>
+                            <Run Text="路径: " Foreground="{DynamicResource TextTertiary}"/>
                             <Run Text="{Binding SelectedSkill.RelativePath, Mode=OneWay}" FontFamily="Consolas"/>
                         </TextBlock>
                     </StackPanel>
@@ -116,7 +116,7 @@
                 </ItemsControl>
 
                 <!-- Loading detail -->
-                <TextBlock DockPanel.Dock="Top" Text="Loading skill content..." Foreground="{DynamicResource TextTertiary}" Margin="0,0,0,8"
+                <TextBlock DockPanel.Dock="Top" Text="正在加载技能内容..." Foreground="{DynamicResource TextTertiary}" Margin="0,0,0,8"
                            Visibility="{Binding IsLoadingDetail, Converter={StaticResource BoolToVisibility}}"/>
 
                 <!-- Markdown content — last child fills remaining space -->

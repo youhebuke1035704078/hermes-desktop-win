@@ -96,7 +96,7 @@ public partial class SessionBrowserViewModel : ObservableObject
 
             if (result == null || !result.Ok)
             {
-                ErrorMessage = result?.Error ?? "Failed to load sessions";
+                ErrorMessage = result?.Error ?? "加载会话失败";
                 return;
             }
 

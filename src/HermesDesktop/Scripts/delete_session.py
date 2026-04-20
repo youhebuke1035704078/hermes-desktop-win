@@ -33,7 +33,7 @@ def stringify(v):
 try:
     session_id = stringify(payload.get("session_id"))
     if not session_id:
-        fail("The session ID is required.")
+        fail("缺少必需的会话 ID。")
 
     hermes_home = pathlib.Path.home() / ".hermes"
     deleted_session_rows = 0
@@ -85,8 +85,8 @@ try:
                 break
 
     if deleted_session_rows <= 0 and not deleted_jsonl:
-        fail(f"No session matching '{session_id}' was found to delete.")
+        fail(f"未找到 ID 为 {session_id} 的会话可供删除。")
 
     print(json.dumps({"ok": True}, ensure_ascii=False))
 except Exception as exc:
-    fail(f"Unable to delete the remote Hermes session: {exc}")
+    fail(f"删除远程 Hermes 会话失败：{exc}")

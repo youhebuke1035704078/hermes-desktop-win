@@ -45,13 +45,13 @@
             <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Top">
                 <Button x:Name="MinimizeButton" Style="{StaticResource CaptionButtonStyle}"
                         Content="&#xE921;" Click="MinimizeButton_Click"
-                        ToolTip="Minimize"/>
+                        ToolTip="最小化"/>
                 <Button x:Name="MaximizeButton" Style="{StaticResource CaptionButtonStyle}"
                         Content="&#xE922;" Click="MaximizeButton_Click"
-                        ToolTip="Maximize"/>
+                        ToolTip="最大化"/>
                 <Button x:Name="CloseButton" Style="{StaticResource CloseButtonStyle}"
                         Content="&#xE8BB;" Click="CloseButton_Click"
-                        ToolTip="Close"/>
+                        ToolTip="关闭"/>
             </StackPanel>
         </Grid>
 
@@ -138,15 +138,15 @@
             <Border Background="{DynamicResource DialogBackground}" CornerRadius="8" Padding="24"
                     MaxWidth="420" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <StackPanel>
-                    <TextBlock Text="Discard unsaved changes?" FontSize="16" FontWeight="SemiBold"
+                    <TextBlock Text="放弃未保存的修改？" FontSize="16" FontWeight="SemiBold"
                                Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,8"/>
-                    <TextBlock Text="USER.md, MEMORY.md, or SOUL.md has unsaved edits. Discard and navigate away?"
+                    <TextBlock Text="USER.md、MEMORY.md 或 SOUL.md 有未保存的改动。放弃这些修改并继续吗？"
                                FontSize="13" Foreground="{DynamicResource TextSecondary}"
                                TextWrapping="Wrap" Margin="0,0,0,20"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Content="Stay" Command="{Binding CancelNavigationCommand}"
+                        <Button Content="留在此页" Command="{Binding CancelNavigationCommand}"
                                 Padding="16,6" Margin="0,0,8,0"/>
-                        <Button Content="Discard" Command="{Binding DiscardChangesAndNavigateCommand}"
+                        <Button Content="放弃" Command="{Binding DiscardChangesAndNavigateCommand}"
                                 Padding="16,6" Style="{StaticResource DangerButton}"/>
                     </StackPanel>
                 </StackPanel>

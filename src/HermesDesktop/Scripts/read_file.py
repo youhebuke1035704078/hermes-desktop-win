@@ -28,4 +28,4 @@ except UnicodeDecodeError:
 except PermissionError:
     fail(f"Permission denied while reading {payload['path']}.")
 except Exception as exc:
-    fail(f"Unable to read {payload['path']}: {exc}")
+    fail(f"无法读取 {payload['path']}：{exc}")

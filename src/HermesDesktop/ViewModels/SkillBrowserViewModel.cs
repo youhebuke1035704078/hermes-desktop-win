@@ -110,7 +110,7 @@ public partial class SkillBrowserViewModel : ObservableObject
 
             if (result == null || !result.Ok)
             {
-                ErrorMessage = result?.Error ?? "Failed to load skills";
+                ErrorMessage = result?.Error ?? "加载技能失败";
                 return;
             }
 
@@ -172,7 +172,7 @@ public class SkillItem
     public List<string>? Tags { get; set; }
 
     public string DisplayName => Name ?? Slug ?? Id;
-    public string DisplayCategory => Category ?? "Uncategorized";
+    public string DisplayCategory => Category ?? "未分类";
 }
 
 public class SkillListResponse

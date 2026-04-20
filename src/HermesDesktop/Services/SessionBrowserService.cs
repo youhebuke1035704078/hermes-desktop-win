@@ -46,7 +46,7 @@ public class SessionBrowserService : ISessionBrowserService
             new() { ["session_id"] = sessionId }, ct);
 
         if (!result.Success)
-            throw new InvalidOperationException(result.Error ?? "Failed to delete session");
+            throw new InvalidOperationException(result.Error ?? "删除会话失败");
     }
 
     private class DeleteResult

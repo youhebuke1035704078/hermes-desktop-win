@@ -11,7 +11,7 @@ try:
     relative_path = payload.get("relative_path", "")
     normalized = pathlib.PurePosixPath(relative_path)
     if normalized.is_absolute() or ".." in normalized.parts or not normalized.parts:
-        fail("The requested skill path is invalid.")
+        fail("请求的技能路径无效。")
 
     root = (pathlib.Path.home() / ".hermes" / "skills").resolve()
     target = (root / pathlib.Path(*normalized.parts) / "SKILL.md").resolve()
@@ -19,7 +19,7 @@ try:
     try:
         target.relative_to(root)
     except ValueError:
-        fail("The requested skill path escapes the Hermes skills directory.")
+        fail("请求的技能路径越出 Hermes 技能目录范围。")
 
     if not target.exists():
         fail(f"No skill exists at {relative_path}.")
@@ -32,4 +32,4 @@ try:
         "markdown_content": content,
     }, ensure_ascii=False))
 except Exception as exc:
-    fail(f"Unable to read the remote Hermes skill detail: {exc}")
+    fail(f"读取远程 Hermes 技能详情失败：{exc}")

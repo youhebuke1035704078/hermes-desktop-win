@@ -74,7 +74,7 @@ public partial class UsageBrowserViewModel : ObservableObject
 
             if (result == null || !result.Ok)
             {
-                ErrorMessage = result?.Error ?? "Failed to load usage data";
+                ErrorMessage = result?.Error ?? "加载用量数据失败";
                 return;
             }
 

@@ -160,4 +160,4 @@ try:
         "recent_sessions": recent_sessions,
     }, ensure_ascii=False))
 except Exception as exc:
-    fail(f"Unable to read remote Hermes usage: {exc}")
+    fail(f"读取远程 Hermes 用量失败：{exc}")

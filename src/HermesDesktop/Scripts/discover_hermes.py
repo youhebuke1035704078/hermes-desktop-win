@@ -90,4 +90,4 @@ try:
 
     print(json.dumps(result, ensure_ascii=False))
 except Exception as exc:
-    fail(f"Unable to discover the remote Hermes workspace: {exc}")
+    fail(f"发现远程 Hermes 工作区失败：{exc}")

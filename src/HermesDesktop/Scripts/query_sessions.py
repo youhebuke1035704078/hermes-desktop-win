@@ -106,7 +106,7 @@ try:
     if conn is None:
         items = build_jsonl_items()
         if not items:
-            fail("No readable session store found under ~/.hermes.")
+            fail("~/.hermes 下未找到可读的会话存储。")
     else:
         scols = [r[1] for r in conn.execute(f"PRAGMA table_info({quote_ident(session_table)})").fetchall()]
         mcols = [r[1] for r in conn.execute(f"PRAGMA table_info({quote_ident(message_table)})").fetchall()]
@@ -121,7 +121,7 @@ try:
         msg_ts_col = choose_column(mcols, ["timestamp", "created_at", "time"])
 
         if not sid_col or not msg_sid_col:
-            fail("Unsupported session schema.")
+            fail("不支持的会话格式。")
 
         rows = conn.execute(f"SELECT * FROM {quote_ident(session_table)}").fetchall()
         items = []
@@ -193,4 +193,4 @@ try:
         "items": items[start:start + limit],
     }, ensure_ascii=False))
 except Exception as exc:
-    fail(f"Unable to read the remote Hermes session list: {exc}")
+    fail(f"读取远程 Hermes 会话列表失败：{exc}")

@@ -20,14 +20,14 @@ try:
 
     if expected_hash is not None:
         if not target.exists():
-            fail(f"{payload['path']} was removed after it was loaded. Reload from Remote before saving.")
+            fail(f"{payload['path']} 在加载后已被删除。请先从远端重新加载再保存。")
         if not target.is_file():
-            fail(f"{payload['path']} is not a regular file anymore. Reload from Remote before saving.")
+            fail(f"{payload['path']} 已不再是普通文件。请先从远端重新加载再保存。")
 
         current_bytes = target.read_bytes()
         current_hash = hashlib.sha256(current_bytes).hexdigest()
         if current_hash != expected_hash:
-            fail(f"{payload['path']} changed on the active host after it was loaded. Reload from Remote before saving.")
+            fail(f"{payload['path']} 在加载后已在远端被修改。请先从远端重新加载再保存。")
 
     fd, temp_name = tempfile.mkstemp(
         dir=str(target.parent),
@@ -57,9 +57,9 @@ try:
         "content_hash": hashlib.sha256(content_bytes).hexdigest(),
     }, ensure_ascii=False))
 except PermissionError:
-    fail(f"Permission denied while writing {payload['path']}.")
+    fail(f"写入 {payload['path']} 时权限被拒绝。")
 except Exception as exc:
-    fail(f"Unable to write {payload['path']}: {exc}")
+    fail(f"无法写入 {payload['path']}：{exc}")
 finally:
     if directory_fd is not None:
         try:

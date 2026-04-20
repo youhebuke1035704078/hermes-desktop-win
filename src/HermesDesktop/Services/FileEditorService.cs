@@ -24,7 +24,7 @@ public class FileEditorService : IFileEditorService
             new() { ["path"] = remotePath }, ct);
 
         if (!result.Ok)
-            throw new InvalidOperationException(result.Error ?? "Failed to read file");
+            throw new InvalidOperationException(result.Error ?? "读取文件失败");
 
         return new RemoteFileDocument(
             remotePath,

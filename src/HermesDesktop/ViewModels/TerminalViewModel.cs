@@ -44,7 +44,7 @@ public partial class TerminalViewModel : ObservableObject
     {
         if (_mainVm.ActiveConnection == null)
         {
-            ErrorMessage = "No active connection.";
+            ErrorMessage = "当前没有活动连接。";
             return;
         }
 
@@ -55,7 +55,7 @@ public partial class TerminalViewModel : ObservableObject
                 _mainVm.ActiveConnection, 120, 40);
 
             var tab = new TerminalTabViewModel(session,
-                _mainVm.ActiveConnection.Label ?? $"Terminal {Tabs.Count + 1}",
+                _mainVm.ActiveConnection.Label ?? $"终端 {Tabs.Count + 1}",
                 _mainVm.ActiveConnection,
                 _sshTransport);
             Tabs.Add(tab);
@@ -63,7 +63,7 @@ public partial class TerminalViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Failed to open terminal: {ex.Message}";
+            ErrorMessage = $"打开终端失败：{ex.Message}";
             _logger.LogError(ex, "Failed to open terminal tab");
         }
     }
@@ -106,9 +106,9 @@ public partial class TerminalTabViewModel : ObservableObject, IDisposable
     {
         get
         {
-            if (IsReconnecting) return "Reconnecting...";
-            if (ExitCode.HasValue) return $"Shell exited (code {ExitCode.Value})";
-            if (IsDisconnected) return "Connection lost";
+            if (IsReconnecting) return "正在重新连接...";
+            if (ExitCode.HasValue) return $"Shell 已退出（代码 {ExitCode.Value}）";
+            if (IsDisconnected) return "连接已断开";
             return "";
         }
     }
