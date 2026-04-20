@@ -44,7 +44,9 @@ public partial class App : Application
                 services.AddSingleton<IUsageBrowserService, UsageBrowserService>();
                 services.AddSingleton<ISkillBrowserService, SkillBrowserService>();
                 services.AddSingleton<SshConfigParser>();
+                services.AddSingleton<IAppUpdaterService, AppUpdaterService>();
 
+                services.AddSingleton<AppUpdaterViewModel>();
                 services.AddSingleton<MainViewModel>();
                 services.AddTransient<ConnectionManagerViewModel>();
                 services.AddTransient<OverviewViewModel>();
@@ -77,6 +79,11 @@ public partial class App : Application
         var mainWindow = _host.Services.GetRequiredService<MainWindow>();
         mainWindow.DataContext = mainVm;
         mainWindow.Show();
+
+        // Fire-and-forget: auto-check for app updates 5s after launch. Mirrors
+        // OpenClaw Desktop's startup cadence — keeps the first paint fast and
+        // gives the window time to settle before hitting the network.
+        _ = _host.Services.GetRequiredService<AppUpdaterViewModel>().AutoCheckOnStartupAsync();
 
         base.OnStartup(e);
     }

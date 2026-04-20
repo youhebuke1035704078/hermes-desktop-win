@@ -21,15 +21,6 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Publish self-contained exe
-        run: |
-          dotnet publish src/HermesDesktop/HermesDesktop.csproj `
-            -c Release -r win-x64 --self-contained true `
-            -p:PublishSingleFile=true `
-            -p:IncludeNativeLibrariesForSelfExtract=true `
-            -p:EnableCompressionInSingleFile=true `
-            -o ./publish
-
       - name: Generate version tag
         id: version
         run: |
@@ -37,7 +28,25 @@ jobs:
           $count = git tag -l "$date.*" | Measure-Object | Select-Object -ExpandProperty Count
           $version = "$date.$($count + 1)"
           echo "tag=v$version" >> $env:GITHUB_OUTPUT
+          echo "version=$version" >> $env:GITHUB_OUTPUT
           echo "Version: v$version"
+
+      - name: Publish self-contained exe
+        # Passing -p:Version stamps AssemblyVersion, FileVersion and
+        # InformationalVersion onto the built exe. The in-app updater reads
+        # InformationalVersion at runtime and compares it against the latest
+        # GitHub Release tag to decide whether a newer build is available.
+        run: |
+          dotnet publish src/HermesDesktop/HermesDesktop.csproj `
+            -c Release -r win-x64 --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -p:EnableCompressionInSingleFile=true `
+            -p:Version=${{ steps.version.outputs.version }} `
+            -p:AssemblyVersion=${{ steps.version.outputs.version }} `
+            -p:FileVersion=${{ steps.version.outputs.version }} `
+            -p:InformationalVersion=${{ steps.version.outputs.version }} `
+            -o ./publish
 
       - name: Create release
         uses: softprops/action-gh-release@v2

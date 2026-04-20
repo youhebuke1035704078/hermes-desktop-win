@@ -54,15 +54,23 @@ public partial class MainViewModel : ObservableObject
     /// <summary>Check if the file editor has unsaved changes.</summary>
     public bool IsDirty => CurrentContentViewModel is FileEditorViewModel fe && fe.IsDirty;
 
+    /// <summary>
+    /// Exposed so the title-bar badge can bind directly to the updater state
+    /// machine without having to look up the DI container from XAML.
+    /// </summary>
+    public AppUpdaterViewModel AppUpdater { get; }
+
     public MainViewModel(
         IServiceProvider serviceProvider,
         IConnectionStore connectionStore,
         ISshTransport sshTransport,
+        AppUpdaterViewModel appUpdater,
         ILogger<MainViewModel> logger)
     {
         _serviceProvider = serviceProvider;
         _connectionStore = connectionStore;
         _sshTransport = sshTransport;
+        AppUpdater = appUpdater;
         _logger = logger;
 
         _sshTransport.ConnectionStateChanged += OnConnectionStateChanged;
