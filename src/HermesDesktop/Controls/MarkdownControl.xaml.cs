@@ -2,6 +2,8 @@ using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.Extensions.Logging;
+using Microsoft.Web.WebView2.Core;
 
 namespace HermesDesktop.Controls;
 
@@ -9,6 +11,7 @@ public partial class MarkdownControl : UserControl
 {
     private bool _isReady;
     private string? _pendingContent;
+    private readonly ILogger? _logger;
 
     public static readonly DependencyProperty MarkdownTextProperty =
         DependencyProperty.Register(nameof(MarkdownText), typeof(string), typeof(MarkdownControl),
@@ -25,6 +28,11 @@ public partial class MarkdownControl : UserControl
         InitializeComponent();
     }
 
+    public MarkdownControl(ILogger logger) : this()
+    {
+        _logger = logger;
+    }
+
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
         if (_isReady) return;
@@ -32,6 +40,7 @@ public partial class MarkdownControl : UserControl
         try
         {
             await MarkdownWebView.EnsureCoreWebView2Async();
+            ConfigureWebView();
 
             var assetsPath = FindAssetsPath("Markdown");
             if (assetsPath != null)
@@ -40,6 +49,18 @@ public partial class MarkdownControl : UserControl
                     "hermes.markdown", assetsPath,
                     Microsoft.Web.WebView2.Core.CoreWebView2HostResourceAccessKind.Allow);
             }
+
+            MarkdownWebView.CoreWebView2.NavigationStarting += (_, args) =>
+            {
+                if (!args.Uri.StartsWith("https://hermes.markdown/", StringComparison.OrdinalIgnoreCase))
+                {
+                    args.Cancel = true;
+                }
+            };
+            MarkdownWebView.CoreWebView2.NewWindowRequested += (_, args) =>
+            {
+                args.Handled = true;
+            };
 
             MarkdownWebView.CoreWebView2.NavigationCompleted += (_, _) =>
             {
@@ -50,9 +71,9 @@ public partial class MarkdownControl : UserControl
 
             MarkdownWebView.CoreWebView2.Navigate("https://hermes.markdown/markdown.html");
         }
-        catch
+        catch (Exception ex)
         {
-            // WebView2 not available - fall back silently
+            _logger?.LogError(ex, "Failed to initialize WebView2 for markdown");
         }
     }
 
@@ -77,6 +98,16 @@ public partial class MarkdownControl : UserControl
         var isDark = Helpers.ThemeManager.IsSystemDarkMode() ? "true" : "false";
         _ = MarkdownWebView.CoreWebView2.ExecuteScriptAsync(
             $"renderMarkdown('{base64}', {isDark})");
+    }
+
+    private void ConfigureWebView()
+    {
+        var settings = MarkdownWebView.CoreWebView2.Settings;
+        settings.AreDefaultContextMenusEnabled = false;
+        settings.AreDevToolsEnabled = false;
+        settings.IsStatusBarEnabled = false;
+        settings.IsWebMessageEnabled = false;
+        settings.AreHostObjectsAllowed = false;
     }
 
     private static string? FindAssetsPath(string subfolder)

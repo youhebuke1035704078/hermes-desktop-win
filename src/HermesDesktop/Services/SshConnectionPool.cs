@@ -10,12 +10,15 @@ namespace HermesDesktop.Services;
 public class SshConnectionPool : IDisposable
 {
     private readonly ILogger<SshConnectionPool> _logger;
+    private readonly KnownHostStore _knownHostStore;
     private readonly ConcurrentDictionary<Guid, PooledConnection> _connections = new();
-    private readonly SemaphoreSlim _connectionLock = new(1, 1);
+    private readonly ConcurrentDictionary<Guid, SemaphoreSlim> _connectionLocks = new();
+    private static readonly TimeSpan IdleTimeout = TimeSpan.FromMinutes(10);
 
-    public SshConnectionPool(ILogger<SshConnectionPool> logger)
+    public SshConnectionPool(ILogger<SshConnectionPool> logger, KnownHostStore knownHostStore)
     {
         _logger = logger;
+        _knownHostStore = knownHostStore;
     }
 
     public async Task<SshClient> GetOrCreateAsync(ConnectionProfile profile, CancellationToken ct)
@@ -26,7 +29,10 @@ public class SshConnectionPool : IDisposable
             return pooled.Client;
         }
 
-        await _connectionLock.WaitAsync(ct);
+        await DisconnectIdleAsync(IdleTimeout);
+
+        var connectionLock = _connectionLocks.GetOrAdd(profile.Id, _ => new SemaphoreSlim(1, 1));
+        await connectionLock.WaitAsync(ct);
         try
         {
             // Double-check after acquiring lock
@@ -53,7 +59,7 @@ public class SshConnectionPool : IDisposable
         }
         finally
         {
-            _connectionLock.Release();
+            connectionLock.Release();
         }
     }
 
@@ -77,10 +83,14 @@ public class SshConnectionPool : IDisposable
             try { kvp.Value.Client.Dispose(); } catch { }
         }
         _connections.Clear();
-        _connectionLock.Dispose();
+        foreach (var connectionLock in _connectionLocks.Values)
+        {
+            connectionLock.Dispose();
+        }
+        _connectionLocks.Clear();
     }
 
-    private SshClient CreateClient(ConnectionProfile profile)
+    public SshClient CreateClient(ConnectionProfile profile)
     {
         var authMethods = BuildAuthMethods(profile);
 
@@ -100,8 +110,16 @@ public class SshConnectionPool : IDisposable
             Encoding = System.Text.Encoding.UTF8
         };
 
-        return new SshClient(connectionInfo);
+        var client = new SshClient(connectionInfo)
+        {
+            KeepAliveInterval = TimeSpan.FromSeconds(30)
+        };
+        client.HostKeyReceived += (_, e) => _knownHostStore.VerifyOrTrust(profile, e);
+        return client;
     }
+
+    public Task ForgetKnownHostAsync(ConnectionProfile profile, CancellationToken ct = default) =>
+        _knownHostStore.ForgetAsync(profile, ct);
 
     private List<AuthenticationMethod> BuildAuthMethods(ConnectionProfile profile)
     {
@@ -112,7 +130,7 @@ public class SshConnectionPool : IDisposable
         {
             try
             {
-                var keyFile = new PrivateKeyFile(profile.SshKeyPath);
+                var keyFile = CreatePrivateKeyFile(profile, profile.SshKeyPath);
                 methods.Add(new PrivateKeyAuthenticationMethod(profile.SshUser, keyFile));
                 _logger.LogDebug("Added key auth from profile: {Path}", profile.SshKeyPath);
             }
@@ -137,7 +155,7 @@ public class SshConnectionPool : IDisposable
 
                 try
                 {
-                    var keyFile = new PrivateKeyFile(keyPath);
+                    var keyFile = CreatePrivateKeyFile(profile, keyPath);
                     methods.Add(new PrivateKeyAuthenticationMethod(profile.SshUser, keyFile));
                     _logger.LogDebug("Added key auth: {Path}", keyPath);
                 }
@@ -149,6 +167,59 @@ public class SshConnectionPool : IDisposable
         }
 
         return methods;
+    }
+
+    private static PrivateKeyFile CreatePrivateKeyFile(ConnectionProfile profile, string path)
+    {
+        var passphrase = ResolvePassphrase(profile);
+        return string.IsNullOrEmpty(passphrase)
+            ? new PrivateKeyFile(path)
+            : new PrivateKeyFile(path, passphrase);
+    }
+
+    private static string? ResolvePassphrase(ConnectionProfile profile)
+    {
+        if (!string.IsNullOrEmpty(profile.SshKeyPassphrase))
+        {
+            return profile.SshKeyPassphrase;
+        }
+
+        var labelKey = new string(profile.Label
+            .Where(char.IsLetterOrDigit)
+            .Select(char.ToUpperInvariant)
+            .ToArray());
+        if (!string.IsNullOrWhiteSpace(labelKey))
+        {
+            var scoped = Environment.GetEnvironmentVariable($"HERMES_DESKTOP_SSH_KEY_PASSPHRASE_{labelKey}");
+            if (!string.IsNullOrEmpty(scoped))
+            {
+                return scoped;
+            }
+        }
+
+        return Environment.GetEnvironmentVariable("HERMES_DESKTOP_SSH_KEY_PASSPHRASE");
+    }
+
+    private async Task DisconnectIdleAsync(TimeSpan idleTimeout)
+    {
+        var cutoff = DateTime.UtcNow - idleTimeout;
+        foreach (var (profileId, pooled) in _connections)
+        {
+            if (pooled.LastUsed > cutoff)
+            {
+                continue;
+            }
+
+            if (_connections.TryRemove(profileId, out var removed))
+            {
+                await Task.Run(() =>
+                {
+                    try { removed.Client.Disconnect(); } catch { }
+                    removed.Client.Dispose();
+                });
+                _logger.LogDebug("Evicted idle SSH connection for profile {Id}", profileId);
+            }
+        }
     }
 
     private class PooledConnection

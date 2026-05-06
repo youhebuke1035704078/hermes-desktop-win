@@ -1,8 +1,6 @@
 using System.Diagnostics;
-using System.IO;
 using HermesDesktop.Models;
 using Microsoft.Extensions.Logging;
-using Renci.SshNet;
 using Renci.SshNet.Common;
 
 namespace HermesDesktop.Services;
@@ -28,54 +26,64 @@ public class SshTransport : ISshTransport
     {
         var effectiveTimeout = timeout ?? TimeSpan.FromSeconds(30);
         var sw = Stopwatch.StartNew();
+        var attempt = 0;
 
-        try
+        while (true)
         {
-            RaiseConnectionState(profile.Id, SshConnectionState.Connecting);
-            var client = await _pool.GetOrCreateAsync(profile, ct);
-            RaiseConnectionState(profile.Id, SshConnectionState.Connected);
-
-            using var cmd = client.CreateCommand(command);
-            cmd.CommandTimeout = effectiveTimeout;
-
-            var result = await Task.Run(() =>
+            try
             {
-                cmd.Execute();
-                return new SshCommandResult(
-                    cmd.ExitStatus ?? -1,
-                    cmd.Result ?? string.Empty,
-                    cmd.Error ?? string.Empty,
-                    sw.Elapsed);
-            }, ct);
+                attempt++;
+                RaiseConnectionState(profile.Id, SshConnectionState.Connecting);
+                var client = await _pool.GetOrCreateAsync(profile, ct);
+                RaiseConnectionState(profile.Id, SshConnectionState.Connected);
 
-            if (result.ExitCode != 0)
-            {
-                _logger.LogWarning("SSH command exited {Code} ({Duration}ms): {Stderr}",
-                    result.ExitCode, result.Duration.TotalMilliseconds,
-                    result.StandardError.Length > 200
-                        ? result.StandardError[..200] + "..."
-                        : result.StandardError);
+                using var cmd = client.CreateCommand(command);
+                cmd.CommandTimeout = effectiveTimeout;
+
+                var result = await Task.Run(() =>
+                {
+                    cmd.Execute();
+                    return new SshCommandResult(
+                        cmd.ExitStatus ?? -1,
+                        cmd.Result ?? string.Empty,
+                        cmd.Error ?? string.Empty,
+                        sw.Elapsed);
+                }, ct);
+
+                if (result.ExitCode != 0)
+                {
+                    _logger.LogWarning("SSH command exited {Code} ({Duration}ms): {Stderr}",
+                        result.ExitCode, result.Duration.TotalMilliseconds,
+                        result.StandardError.Length > 200
+                            ? result.StandardError[..200] + "..."
+                            : result.StandardError);
+                }
+                else
+                {
+                    _logger.LogDebug("SSH command completed in {Duration}ms", result.Duration.TotalMilliseconds);
+                }
+
+                return result;
             }
-            else
+            catch (SshConnectionException ex) when (attempt == 1)
             {
-                _logger.LogDebug("SSH command completed in {Duration}ms", result.Duration.TotalMilliseconds);
+                _logger.LogWarning(ex, "SSH connection error to {Target}; evicting and retrying once",
+                    profile.DisplayTarget);
+                await _pool.DisconnectAsync(profile.Id);
             }
+            catch (SshConnectionException ex)
+            {
+                _logger.LogError(ex, "SSH connection error to {Target}", profile.DisplayTarget);
+                RaiseConnectionState(profile.Id, SshConnectionState.Error, ex.Message);
 
-            return result;
-        }
-        catch (SshConnectionException ex)
-        {
-            _logger.LogError(ex, "SSH connection error to {Target}", profile.DisplayTarget);
-            RaiseConnectionState(profile.Id, SshConnectionState.Error, ex.Message);
-
-            // Evict broken connection and retry once
-            await _pool.DisconnectAsync(profile.Id);
-            throw;
-        }
-        catch (SshOperationTimeoutException ex)
-        {
-            _logger.LogError(ex, "SSH command timed out after {Timeout}s", effectiveTimeout.TotalSeconds);
-            throw;
+                await _pool.DisconnectAsync(profile.Id);
+                throw;
+            }
+            catch (SshOperationTimeoutException ex)
+            {
+                _logger.LogError(ex, "SSH command timed out after {Timeout}s", effectiveTimeout.TotalSeconds);
+                throw;
+            }
         }
     }
 
@@ -90,20 +98,7 @@ public class SshTransport : ISshTransport
         // because ShellStream ties up the connection
         var client = await Task.Run(() =>
         {
-            var pool = _pool; // Use pool's CreateClient logic via a separate connection
-            // For terminal, we need a dedicated SshClient
-            var authMethods = BuildAuthMethodsForTerminal(profile);
-            var connectionInfo = new ConnectionInfo(
-                profile.SshHost,
-                profile.SshPort,
-                profile.SshUser,
-                authMethods.ToArray())
-            {
-                Timeout = TimeSpan.FromSeconds(15),
-                Encoding = System.Text.Encoding.UTF8
-            };
-
-            var sshClient = new SshClient(connectionInfo);
+            var sshClient = _pool.CreateClient(profile);
             sshClient.Connect();
             return sshClient;
         }, ct);
@@ -145,41 +140,5 @@ public class SshTransport : ISshTransport
             State = state,
             ErrorMessage = error
         });
-    }
-
-    private List<AuthenticationMethod> BuildAuthMethodsForTerminal(ConnectionProfile profile)
-    {
-        var methods = new List<AuthenticationMethod>();
-        var sshDir = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ssh");
-
-        if (!string.IsNullOrWhiteSpace(profile.SshKeyPath) && File.Exists(profile.SshKeyPath))
-        {
-            try
-            {
-                methods.Add(new PrivateKeyAuthenticationMethod(
-                    profile.SshUser, new PrivateKeyFile(profile.SshKeyPath)));
-            }
-            catch { }
-        }
-
-        if (Directory.Exists(sshDir))
-        {
-            foreach (var keyName in new[] { "id_ed25519", "id_rsa", "id_ecdsa" })
-            {
-                var keyPath = Path.Combine(sshDir, keyName);
-                if (!File.Exists(keyPath)) continue;
-                if (keyPath.Equals(profile.SshKeyPath, StringComparison.OrdinalIgnoreCase)) continue;
-
-                try
-                {
-                    methods.Add(new PrivateKeyAuthenticationMethod(
-                        profile.SshUser, new PrivateKeyFile(keyPath)));
-                }
-                catch { }
-            }
-        }
-
-        return methods;
     }
 }

@@ -74,7 +74,7 @@ public class RemotePythonScriptExecutor : IRemoteScriptExecutor
         return result.StandardOutput;
     }
 
-    private static string PythonStringLiteral(string value)
+    internal static string PythonStringLiteral(string value)
     {
         // Use triple-quoted raw string to safely embed JSON
         var escaped = value.Replace("\\", "\\\\").Replace("'", "\\'");

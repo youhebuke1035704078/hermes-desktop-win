@@ -35,6 +35,7 @@ public partial class App : Application
             .ConfigureServices((_, services) =>
             {
                 services.AddSingleton<SshConnectionPool>();
+                services.AddSingleton<KnownHostStore>();
                 services.AddSingleton<ISshTransport, SshTransport>();
                 services.AddSingleton<IRemoteScriptExecutor, RemotePythonScriptExecutor>();
                 services.AddSingleton<IConnectionStore, ConnectionStore>();

@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Text.Json;
 using System.Windows;
 using Microsoft.Extensions.Logging;
@@ -18,6 +19,7 @@ public sealed class AppUpdaterService : IAppUpdaterService, IDisposable
     private const string RepoOwner = "youhebuke1035704078";
     private const string RepoName = "hermes-desktop-win";
     private const string ReleaseAssetName = "HermesDesktop.exe";
+    private const string ChecksumAssetName = ReleaseAssetName + ".sha256";
     private const string UserAgent = "HermesDesktop-Updater";
 
     private readonly HttpClient _http;
@@ -28,6 +30,7 @@ public sealed class AppUpdaterService : IAppUpdaterService, IDisposable
     private double _downloadPercent;
     private string? _errorMessage;
     private string? _assetDownloadUrl;
+    private string? _checksumDownloadUrl;
     private string? _downloadedFilePath;
 
     public AppUpdaterService(ILogger<AppUpdaterService> logger)
@@ -128,8 +131,9 @@ public sealed class AppUpdaterService : IAppUpdaterService, IDisposable
                 return;
             }
 
-            // Find the HermesDesktop.exe asset
+            // Find the executable asset and its detached SHA-256 checksum.
             _assetDownloadUrl = null;
+            _checksumDownloadUrl = null;
             if (doc.RootElement.TryGetProperty("assets", out var assets) && assets.ValueKind == JsonValueKind.Array)
             {
                 foreach (var asset in assets.EnumerateArray())
@@ -140,7 +144,12 @@ public sealed class AppUpdaterService : IAppUpdaterService, IDisposable
                         _assetDownloadUrl = asset.TryGetProperty("browser_download_url", out var u)
                             ? u.GetString()
                             : null;
-                        break;
+                    }
+                    else if (string.Equals(name, ChecksumAssetName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        _checksumDownloadUrl = asset.TryGetProperty("browser_download_url", out var u)
+                            ? u.GetString()
+                            : null;
                     }
                 }
             }
@@ -151,6 +160,15 @@ public sealed class AppUpdaterService : IAppUpdaterService, IDisposable
                 // rather than erroring out, since the user can't do anything about it.
                 _logger.LogWarning("Release {Tag} has no {Asset} asset; skipping", tagName, ReleaseAssetName);
                 State = UpdaterState.UpToDate;
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(_checksumDownloadUrl))
+            {
+                _logger.LogWarning("Release {Tag} has no {Asset} asset; refusing update",
+                    tagName,
+                    ChecksumAssetName);
+                ErrorMessage = $"Release 缺少 {ChecksumAssetName} 校验文件";
+                State = UpdaterState.Error;
                 return;
             }
 
@@ -171,7 +189,7 @@ public sealed class AppUpdaterService : IAppUpdaterService, IDisposable
 
     public async Task DownloadUpdateAsync(CancellationToken ct = default)
     {
-        if (string.IsNullOrWhiteSpace(_assetDownloadUrl))
+        if (string.IsNullOrWhiteSpace(_assetDownloadUrl) || string.IsNullOrWhiteSpace(_checksumDownloadUrl))
         {
             ErrorMessage = "没有可下载的更新";
             State = UpdaterState.Error;
@@ -193,6 +211,8 @@ public sealed class AppUpdaterService : IAppUpdaterService, IDisposable
             var targetPath = Path.Combine(
                 tempDir,
                 $"HermesDesktop-{AvailableVersion ?? Guid.NewGuid().ToString("N")}.exe");
+            var expectedSha256 = await DownloadExpectedSha256Async(_checksumDownloadUrl, ct)
+                .ConfigureAwait(false);
 
             using var req = new HttpRequestMessage(HttpMethod.Get, _assetDownloadUrl);
             using var resp = await _http.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, ct)
@@ -216,6 +236,14 @@ public sealed class AppUpdaterService : IAppUpdaterService, IDisposable
                         DownloadPercent = read * 100.0 / total;
                     }
                 }
+            }
+
+            var actualSha256 = await ComputeSha256Async(targetPath, ct).ConfigureAwait(false);
+            if (!string.Equals(actualSha256, expectedSha256, StringComparison.OrdinalIgnoreCase))
+            {
+                File.Delete(targetPath);
+                throw new InvalidOperationException(
+                    $"下载文件校验失败：期望 {expectedSha256}，实际 {actualSha256}");
             }
 
             DownloadPercent = 100;
@@ -348,7 +376,7 @@ endlocal
     /// <c>2026.4.16.1</c> into a <see cref="Version"/>. Unknown formats become
     /// <c>0.0.0.0</c> so they never beat the current version.
     /// </summary>
-    private static Version NormalizeVersion(string raw)
+    internal static Version NormalizeVersion(string raw)
     {
         var s = raw.Trim().TrimStart('v', 'V');
         // Version wants exactly major.minor[.build[.revision]]; be lenient
@@ -362,7 +390,29 @@ endlocal
         return new Version(ints[0], ints[1], ints[2], ints[3]);
     }
 
-    private static bool IsNewer(Version latest, Version current) => latest.CompareTo(current) > 0;
+    internal static bool IsNewer(Version latest, Version current) => latest.CompareTo(current) > 0;
+
+    private async Task<string> DownloadExpectedSha256Async(string url, CancellationToken ct)
+    {
+        var text = await _http.GetStringAsync(url, ct).ConfigureAwait(false);
+        var firstToken = text
+            .Split([' ', '\t', '\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
+            .FirstOrDefault();
+
+        if (firstToken is null || firstToken.Length != 64 || !firstToken.All(Uri.IsHexDigit))
+        {
+            throw new InvalidOperationException($"{ChecksumAssetName} 格式无效");
+        }
+
+        return firstToken.ToLowerInvariant();
+    }
+
+    private static async Task<string> ComputeSha256Async(string path, CancellationToken ct)
+    {
+        await using var stream = File.OpenRead(path);
+        var hash = await SHA256.HashDataAsync(stream, ct).ConfigureAwait(false);
+        return Convert.ToHexString(hash).ToLowerInvariant();
+    }
 
     public void Dispose()
     {
