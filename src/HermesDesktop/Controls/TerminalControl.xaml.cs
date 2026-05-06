@@ -39,6 +39,7 @@ public partial class TerminalControl : UserControl, IDisposable
         try
         {
             await TerminalWebView.EnsureCoreWebView2Async();
+            ConfigureWebView();
 
             // Map local assets folder to a virtual host
             var assetsPath = Path.Combine(
@@ -60,6 +61,17 @@ public partial class TerminalControl : UserControl, IDisposable
 
             // Handle messages from xterm.js
             TerminalWebView.CoreWebView2.WebMessageReceived += OnWebMessageReceived;
+            TerminalWebView.CoreWebView2.NavigationStarting += (_, args) =>
+            {
+                if (!args.Uri.StartsWith("https://hermes.terminal/", StringComparison.OrdinalIgnoreCase))
+                {
+                    args.Cancel = true;
+                }
+            };
+            TerminalWebView.CoreWebView2.NewWindowRequested += (_, args) =>
+            {
+                args.Handled = true;
+            };
 
             // Navigate to the terminal page
             TerminalWebView.CoreWebView2.Navigate("https://hermes.terminal/terminal.html");
@@ -75,6 +87,16 @@ public partial class TerminalControl : UserControl, IDisposable
         _shellStream = shellStream;
         _sshClient = sshClient;
         StartReading();
+    }
+
+    private void ConfigureWebView()
+    {
+        var settings = TerminalWebView.CoreWebView2.Settings;
+        settings.AreDefaultContextMenusEnabled = false;
+        settings.AreDevToolsEnabled = false;
+        settings.IsStatusBarEnabled = false;
+        settings.AreHostObjectsAllowed = false;
+        settings.IsWebMessageEnabled = true;
     }
 
     private void StartReading()

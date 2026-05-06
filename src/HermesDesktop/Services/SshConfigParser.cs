@@ -38,7 +38,7 @@ public class SshConfigParser
         }
     }
 
-    private List<SshConfigEntry> ParseLines(string[] lines)
+    internal static List<SshConfigEntry> ParseLines(string[] lines)
     {
         var entries = new List<SshConfigEntry>();
         SshConfigEntry? current = null;
@@ -87,8 +87,8 @@ public class SshConfigParser
                         current.IdentityFile = value.StartsWith("~/")
                             ? Path.Combine(
                                 Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                                value[2..])
-                            : value;
+                                value[2..].Replace('/', Path.DirectorySeparatorChar))
+                            : value.Replace('/', Path.DirectorySeparatorChar);
                         break;
                 }
             }

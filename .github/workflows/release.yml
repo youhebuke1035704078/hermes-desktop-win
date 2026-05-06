@@ -5,6 +5,10 @@ on:
     branches:
       - master
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
@@ -20,6 +24,14 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: |
+          dotnet restore HermesDesktop.sln
+          dotnet restore tests/HermesDesktop.Tests/HermesDesktop.Tests.csproj
+
+      - name: Test
+        run: dotnet test tests/HermesDesktop.Tests/HermesDesktop.Tests.csproj -c Release --no-restore
 
       - name: Generate version tag
         id: version
@@ -48,10 +60,20 @@ jobs:
             -p:InformationalVersion=${{ steps.version.outputs.version }} `
             -o ./publish
 
+      - name: Generate checksums and zip
+        run: |
+          $exe = "publish/HermesDesktop.exe"
+          $hash = (Get-FileHash $exe -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  HermesDesktop.exe" | Out-File -Encoding ascii "publish/HermesDesktop.exe.sha256"
+          Compress-Archive -Path $exe, "publish/HermesDesktop.exe.sha256" -DestinationPath "publish/HermesDesktop-${{ steps.version.outputs.version }}-win-x64.zip" -Force
+
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.tag }}
           name: ${{ steps.version.outputs.tag }}
-          files: publish/HermesDesktop.exe
+          files: |
+            publish/HermesDesktop.exe
+            publish/HermesDesktop.exe.sha256
+            publish/HermesDesktop-${{ steps.version.outputs.version }}-win-x64.zip
           generate_release_notes: true

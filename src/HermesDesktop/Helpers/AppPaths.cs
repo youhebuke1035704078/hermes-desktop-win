@@ -10,6 +10,7 @@ public static class AppPaths
 
     public static string AppDataDirectory => _appDataDir;
     public static string ConnectionsFile => Path.Combine(_appDataDir, "connections.json");
+    public static string KnownHostsFile => Path.Combine(_appDataDir, "known_hosts.json");
     public static string PreferencesFile => Path.Combine(_appDataDir, "preferences.json");
     public static string LogsDirectory => Path.Combine(_appDataDir, "logs");
 

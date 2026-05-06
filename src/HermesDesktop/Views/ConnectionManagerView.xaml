@@ -132,6 +132,9 @@
                 <TextBlock Text="SSH 密钥路径（可选）" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
                 <TextBox Text="{Binding EditKeyPath, UpdateSourceTrigger=PropertyChanged}" Padding="8,6" FontSize="13" Margin="0,0,0,16"/>
 
+                <TextBlock Text="SSH 密钥密码（可选，仅用于本次测试，不会保存）" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
+                <PasswordBox x:Name="KeyPassphraseBox" PasswordChanged="OnKeyPassphraseChanged" IsVisibleChanged="OnKeyPassphraseVisibilityChanged" Padding="8,6" FontSize="13" Margin="0,0,0,16"/>
+
                 <!-- Test result -->
                 <TextBlock Text="{Binding TestResult}" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,12"
                            Visibility="{Binding TestResult, Converter={StaticResource NullToVisibility}}"

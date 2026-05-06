@@ -22,6 +22,9 @@ public class ConnectionProfile
     [JsonPropertyName("sshKeyPath")]
     public string? SshKeyPath { get; set; }
 
+    [JsonIgnore]
+    public string? SshKeyPassphrase { get; set; }
+
     [JsonPropertyName("createdAt")]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

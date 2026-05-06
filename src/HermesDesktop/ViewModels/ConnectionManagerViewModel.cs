@@ -43,6 +43,9 @@ public partial class ConnectionManagerViewModel : ObservableObject
     [ObservableProperty]
     private string _editKeyPath = string.Empty;
 
+    [ObservableProperty]
+    private string _editKeyPassphrase = string.Empty;
+
     private Guid? _editingId;
 
     public ObservableCollection<ConnectionProfile> Connections => _mainVm.Connections;
@@ -76,6 +79,7 @@ public partial class ConnectionManagerViewModel : ObservableObject
         EditUser = "";
         EditPort = 22;
         EditKeyPath = "";
+        EditKeyPassphrase = "";
         TestResult = null;
         IsEditing = true;
     }
@@ -89,6 +93,7 @@ public partial class ConnectionManagerViewModel : ObservableObject
         EditUser = profile.SshUser;
         EditPort = profile.SshPort;
         EditKeyPath = profile.SshKeyPath ?? "";
+        EditKeyPassphrase = "";
         TestResult = null;
         IsEditing = true;
     }
@@ -104,6 +109,7 @@ public partial class ConnectionManagerViewModel : ObservableObject
             SshUser = EditUser.Trim(),
             SshPort = EditPort,
             SshKeyPath = string.IsNullOrWhiteSpace(EditKeyPath) ? null : EditKeyPath.Trim(),
+            SshKeyPassphrase = string.IsNullOrEmpty(EditKeyPassphrase) ? null : EditKeyPassphrase,
         };
 
         if (!profile.IsValid) return;

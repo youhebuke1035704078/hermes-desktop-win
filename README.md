@@ -8,7 +8,7 @@ A native Windows desktop client for [Hermes Agent](https://github.com/dodo-reach
 
 ## Download
 
-Grab the latest `HermesDesktop.exe` from [**Releases**](https://github.com/acegraphx/hermes-desktop-win/releases). It's a self-contained single file (~72 MB) &mdash; no installer, no .NET runtime needed. Just run it.
+Grab the latest `HermesDesktop.exe` or zip package from [**Releases**](https://github.com/youhebuke1035704078/hermes-desktop-win/releases). It's a self-contained single file (~72 MB) &mdash; no installer, no .NET runtime needed. Each release also ships `HermesDesktop.exe.sha256`; the in-app updater verifies it before installing.
 
 ---
 
@@ -58,7 +58,7 @@ Grab the latest `HermesDesktop.exe` from [**Releases**](https://github.com/acegr
 
 ### From release
 
-1. Download `HermesDesktop.zip` from Releases
+1. Download `HermesDesktop-<version>-win-x64.zip` from Releases
 2. Extract anywhere
 3. Run `HermesDesktop.exe`
 
@@ -83,11 +83,16 @@ dotnet run --project src/HermesDesktop
    - **Username** &mdash; your SSH user
    - **Port** &mdash; typically 22
    - **SSH Key Path** &mdash; optional, auto-discovers `~/.ssh/id_ed25519`, `id_rsa`, `id_ecdsa`
+   - **SSH Key Passphrase** &mdash; optional, used only for the current test and never saved
 3. Click **Test** to verify SSH connectivity and Python availability.
 4. Click **Save**, then **Connect** on the new entry.
 5. The sidebar unlocks all sections. Browse sessions, edit files, or open a terminal.
 
 Alternatively, click **Import SSH Config** to pull hosts from your `~/.ssh/config`.
+
+On first SSH connection, Hermes Desktop stores the remote host key fingerprint in `%APPDATA%\HermesDesktop\known_hosts.json`. Future connections must present the same fingerprint, which protects against accidental host swaps or man-in-the-middle attacks.
+
+For unattended use with encrypted keys, set `HERMES_DESKTOP_SSH_KEY_PASSPHRASE` or a label-scoped variable such as `HERMES_DESKTOP_SSH_KEY_PASSPHRASE_PROD` before launching the app.
 
 ---
 
@@ -106,7 +111,7 @@ WPF (.NET 8) + CommunityToolkit.Mvvm
        |
   MVVM: Views (XAML) <-> ViewModels (C#) <-> Services (C#)
        |
-  SSH.NET (connection pool, command execution, ShellStream)
+  SSH.NET (known_hosts trust, connection pool, command execution, ShellStream)
        |
   Remote Python scripts (base64-encoded, piped to python3 via SSH)
        |
@@ -130,7 +135,7 @@ This keeps the remote host stateless. No helper services, no daemons, no file mi
 
 ### SSH connection pooling
 
-Unlike the macOS app (which spawns a fresh `ssh` process per command), the Windows app maintains a persistent SSH connection per profile via SSH.NET. A `SshConnectionPool` with double-checked locking manages connections. Terminal sessions get dedicated connections since `ShellStream` ties up the channel.
+Unlike the macOS app (which spawns a fresh `ssh` process per command), the Windows app maintains a persistent SSH connection per profile via SSH.NET. A `SshConnectionPool` with per-profile locking, keepalives, idle eviction, and host-key pinning manages connections. Terminal sessions get dedicated connections since `ShellStream` ties up the channel.
 
 ### Terminal implementation
 
@@ -220,6 +225,7 @@ The app stores configuration in `%APPDATA%\HermesDesktop\`:
 | File | Contents |
 |------|----------|
 | `connections.json` | SSH connection profiles (label, host, user, port, key path) |
+| `known_hosts.json` | Trusted SSH host key fingerprints |
 | `preferences.json` | Last active connection ID |
 | `logs/hermes-YYYYMMDD.log` | Debug logs (7-day rolling retention) |
 
